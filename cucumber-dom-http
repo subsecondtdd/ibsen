@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+echo -e "\n🥒 ⚛️ ☁️  dom-http"
+ACTOR=DomActor NODE_ENV=production node node_modules/.bin/cucumber-electron "$@"
