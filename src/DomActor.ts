@@ -1,4 +1,5 @@
 import BaseActor from "./BaseActor"
+import World from "./World"
 
 const loc = (typeof window === "object") ? window.location.href : undefined
 
@@ -8,8 +9,8 @@ export default class DomActor extends BaseActor {
   private $actor: HTMLElement
   private $root: HTMLElement
 
-  constructor(name: string, mountApp: ($root: HTMLElement) => void, keepDom: boolean) {
-    super(name)
+  constructor(name: string, world: World, mountApp: ($root: HTMLElement) => void, keepDom: boolean) {
+    super(name, world)
     this.mountApp = mountApp
     this.keepDom = keepDom
   }
@@ -32,11 +33,11 @@ export default class DomActor extends BaseActor {
       this.$actor.parentNode.removeChild(this.$actor)
   }
 
-  protected invoke(activity: (...args: any[]) => void): void {
-    activity(this.$root)
+  protected invokeAction(action: (...args: any[]) => void): void {
+    action(this.$root)
   }
 
-  protected invokeQuestion<T>(question: (...args: any[]) => T): T {
+  protected invokeOutcome<T>(question: (...args: any[]) => T): T {
     return question(this.$root)
   }
 }

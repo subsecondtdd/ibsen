@@ -1,15 +1,15 @@
 import IStartable from "./IStartable"
 import IStoppable from "./IStoppable"
-import IActivities from "./IActivities"
-import IQuestions from "./IQuestions"
+import IActions from "./IActions"
+import IOutcomes from "./IOutcomes"
 
 export default interface IActor extends IStartable, IStoppable {
   getName(): string
 
-  has(pastActivity: (actorName: string) => void): void
+  has(context: (...args: any[]) => void): void
 
-  attemptsTo(activities: IActivities): void
+  attemptsTo(actions: IActions): void
 
-  ask<T>(question: IQuestions<T>): T
+  check<T>(outcomes: IOutcomes<T>): T
 }
 

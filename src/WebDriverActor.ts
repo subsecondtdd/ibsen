@@ -35,7 +35,7 @@ export default class WebDriverActor extends BaseActor {
     }
   }
 
-  invoke(activity: (...args: any[]) => void): void {
+  invokeAction(activity: (...args: any[]) => void): void {
     activity(this.browser)
   }
 

@@ -7,11 +7,11 @@ export default class DirectActor extends BaseActor {
   stop(): void {
   }
 
-  protected invoke(activity: (...args: any[]) => void): void {
-    activity()
+  protected invokeAction(action: (...args: any[]) => void): void {
+    action()
   }
 
-  protected invokeQuestion<T>(question: (...args: any[]) => T): T {
-    return question();
+  protected invokeOutcome<T>(question: (...args: any[]) => T): T {
+    return question()
   }
 }

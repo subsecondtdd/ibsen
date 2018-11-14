@@ -7,7 +7,7 @@ const ACTOR = process.env.ACTOR
 type ActorFactory = (actorName: string) => IActor
 
 // TODO: Open-Closed (make final)
-export default class World {
+export default abstract class World {
   private readonly actors = new Map<string, IActor>()
   private readonly stoppables: IStoppable[] = []
 
@@ -37,14 +37,20 @@ export default class World {
   }
 
   private makeDirectActor(actorName: string): IActor {
-    return new DirectActor(actorName)
+    return new DirectActor(actorName, this)
   }
 
   private makeDomActor(actorName: string): IActor {
-    return new DomActor(actorName, this.mountApp.bind(this), true)
+    return new DomActor(actorName, this, this.mountApp.bind(this), true)
   }
 
-  protected mountApp($root: HTMLElement) {
+  protected mountApp($root: HTMLElement): void {
     console.log("Mounting app...")
   }
+
+  public abstract invokeContextFunction(actorName: string, context: (...args: any[]) => void): void
+
+  public abstract invokeActionFunction(actorName: string, context: (...args: any[]) => void): void
+
+  public abstract invokeOutcomeFunction<T>(actorName: string, context: (...args: any[]) => T): T
 }
