@@ -1,17 +1,17 @@
 import webdriverio from "webdriverio"
-import BaseActor from "./BaseActor"
+import Actor from "./Actor"
 import getMicrodata from "./getMicrodata"
+import ISession from "./ISession"
 
 /**
  * The Dom Actor interacts with the Dom. It also has a reference to the codebreaker, so it can query for its
  * version. This is used to wait for synchronisation before interacting with the DOM.
  */
-export default class WebDriverActor extends BaseActor {
+export default class WebDriverSession implements ISession {
   private readonly baseUrl: string
   private browser: WebdriverIO.Client<void>
 
-  constructor(name: string, baseUrl: string) {
-    super(name)
+  constructor(baseUrl: string) {
     this.baseUrl = baseUrl
   }
 

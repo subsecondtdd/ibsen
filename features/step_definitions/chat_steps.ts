@@ -1,51 +1,53 @@
 import { Given, Then, When } from "cucumber"
-import IActor from "../../src/IActor"
-import IActions from "../../src/IActions"
+import Actor from "../../src/Actor"
+import DirectSession from "../support/sessions/DirectSession"
+import BaseDomSession from "../../src/BaseDomSession"
 import getMicrodata from "../../src/getMicrodata"
-import IOutcomes from "../../src/IOutcomes"
-import ChatApp from "../src/ChatApp"
-import assert = require("assert")
+import assert from "assert"
+import DomSession from "../support/sessions/DomSession"
 
-function SignedIn() {
-  return (actorName: string, chatApp: ChatApp) => {
-    chatApp.signIn(actorName)
+function Said(message: string) {
+  return {
+    DirectSession: ({chatApp, actorName}: DirectSession) => {
+      chatApp.say(actorName, message)
+    },
+    DomSession: ({chatApp, actorName}: DomSession) => {
+      chatApp.say(actorName, message)
+    },
   }
 }
 
-function Say(text: string): IActions {
-  return {
-    DomActor: ($root: HTMLElement) => {
-      console.log(`2 Fill in ${text} under ${$root}`)
-    },
 
-    DirectActor: (actorName: string, chatApp: ChatApp) => {
-      chatApp.say(actorName, text)
+function Look() {
+  return {
+    DirectSession: () => {},
+    DomSession: () => {},
+  }
+}
+
+
+function Messages() {
+  return {
+    DirectSession: ({chatApp}: DirectSession): string[] => {
+      return chatApp.getMessages()
+    },
+    DomSession: ({$root}: BaseDomSession): string[] => {
+      const microdata = getMicrodata($root)
+      return microdata.messages.map((m: any) => m.value)
     }
   }
 }
 
-function Messages(): IOutcomes<string[]> {
-  return {
-    DomActor: ($root: HTMLElement): string[] => {
-      return getMicrodata($root)["messages"]
-    },
 
-    DirectActor: (actorName: string, chatApp: ChatApp): string[] => {
-      return chatApp.getMessagesFor(actorName)
-    }
-  }
-}
-
-
-Given("{actor} has signed in", function (actor: IActor) {
-  actor.has(SignedIn())
+Given("{actor} has said {string}", function (actor: Actor, message: string) {
+  actor.has(Said(message))
 })
 
-When("{actor} says {string}", async function (actor: IActor, text: string) {
-  await actor.attemptsTo(Say(text))
+When("{actor} looks at the messages", async function (actor: Actor) {
+  await actor.attemptsTo(Look())
 })
 
-Then("{actor} should see message {string}", function (actor: IActor, message: string) {
+Then("{actor} should see {string}", function (actor: Actor, message: string) {
   const messages: string[] = actor.check(Messages())
   assert(messages.indexOf(message) != -1, `No "${message}" in ${messages}`)
 })

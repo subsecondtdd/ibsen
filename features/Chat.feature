@@ -1,7 +1,6 @@
 Feature: Chat
 
   Scenario: send message
-    Given Lucy has signed in
-    And Sean has signed in
-    When Sean says "Hello"
-    Then Lucy should see message "Hello"
+    Given Sean has said "hello"
+    When Lucy looks at the messages
+    Then Lucy should see "hello"
