@@ -17,19 +17,20 @@ export default class Actor {
     return this.name
   }
 
-  public has(interaction: Interaction<void>): void {
+  // TODO: Don't use Interaction here, but something representing *context* (the "past")
+  public async has(interaction: Interaction<void>): Promise<void> {
     return this.invoke(interaction)
   }
 
-  public attemptsTo(interaction: Interaction<void>): void {
+  public async attemptsTo(interaction: Interaction<void>): Promise<void> {
     return this.invoke(interaction)
   }
 
-  public check<T>(interaction: Interaction<T>): T {
+  public async check<T>(interaction: Interaction<T>): Promise<T> {
     return this.invoke(interaction)
   }
 
-  private invoke<T>(interaction: Interaction<T>): T {
+  private async invoke<T>(interaction: Interaction<T>): Promise<T> {
     const key = this.session.constructor.name
     const fn = interaction[key]
     if (!fn) throw new Error(`No ${key} in ${Object.keys(interaction)}`)
