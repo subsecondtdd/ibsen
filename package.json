@@ -17,6 +17,7 @@
     "@types/webdriverio": "^4.13.0",
     "cucumber": "^5.0.2",
     "cucumber-electron": "^2.5.0",
+    "dom-testing-library": "^3.12.3",
     "electron": "^3.0.8",
     "node-fetch": "^2.3.0",
     "react": "^16.6.3",

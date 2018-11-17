@@ -3,6 +3,7 @@ import Actor from "../../src/Actor"
 import DirectSession from "../support/sessions/DirectSession"
 import getMicrodata from "../../src/getMicrodata"
 import assert from "assert"
+import { waitForElement } from "dom-testing-library"
 import DomSession from "../support/sessions/DomSession"
 import ChatContext from "../support/sessions/ChatContext"
 
@@ -14,7 +15,8 @@ function Look() {
   return {
     DirectSession: async () => {
     },
-    DomSession: async () => {
+    DomSession: async ({$root}: DomSession) => {
+      await waitForElement(() => $root.querySelector("li"), ({container: $root}))
     },
   }
 }
