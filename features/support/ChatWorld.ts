@@ -1,4 +1,4 @@
-import http, { IncomingMessage, ServerResponse } from "http"
+import http from "http"
 import { AddressInfo } from "net"
 import { promisify } from "util"
 import World from "../../src/World"
@@ -7,23 +7,12 @@ import ChatApp from "../src/ChatApp"
 import ISession from "../../src/ISession"
 import DirectSession from "./sessions/DirectSession"
 import DomSession from "./sessions/DomSession"
-import HttpSession from "./sessions/HttpSession"
 import ChatClient from "../src/ChatClient"
 import ChatContext from "./sessions/ChatContext"
+import IChatApi from "../src/IChatApi"
+import makeRequestListener from "../src/makeRequestListener"
 
-// TODO: Move out
-function makeApp(chatApp: ChatApp) {
-  return async (req: IncomingMessage, res: ServerResponse) => {
-    try {
-      const messages = await chatApp.getMessages()
-      res.writeHead(200, {"Content-Type": "application/json"})
-      res.end(JSON.stringify(messages))
-    } catch (e) {
-      res.writeHead(500, {"Content-Type": "text/plain"})
-      res.end(e.message)
-    }
-  }
-}
+const CHAT_API = process.env.CHAT_API
 
 class ChatWorld extends World {
   private readonly chatApp: ChatApp
@@ -38,15 +27,30 @@ class ChatWorld extends World {
   }
 
   protected async makeSession(sessionType: string, actorName: string): Promise<ISession> {
+    const chatApi = await this.makeChatApi(CHAT_API)
+
     switch (sessionType) {
       case "DirectSession":
-        return new DirectSession(actorName, this.chatApp)
+        return new DirectSession(actorName, chatApi)
 
       case "DomSession":
-        return new DomSession(actorName, this.chatApp)
+        return new DomSession(actorName, chatApi)
 
-      case "HttpSession":
-        const app = makeApp(this.chatApp)
+      default:
+        throw new Error(`Unsupported Session: ${sessionType}`)
+    }
+  }
+
+  protected async makeChatApi(chatApiType: string): Promise<IChatApi> {
+    switch (chatApiType) {
+      // TODO: Direct or HTTP
+
+      case "ChatApp":
+        return this.chatApp
+
+      case "ChatClient":
+        const app = makeRequestListener(this.chatApp)
+        // TODO: Extract this
         const server = http.createServer(app)
         const listen = promisify(server.listen.bind(server))
         await listen()
@@ -57,8 +61,10 @@ class ChatWorld extends World {
         const addr = server.address() as AddressInfo
         const port = addr.port
         const baseurl = `http://localhost:${port}`
-        const chatClient = new ChatClient(baseurl)
-        return new HttpSession(actorName, chatClient)
+        return new ChatClient(baseurl)
+
+      default:
+        throw new Error(`Unsupported ChatApi: ${chatApiType}`)
     }
   }
 }

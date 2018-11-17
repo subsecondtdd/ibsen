@@ -5,13 +5,13 @@ const loc = (typeof window === "object") ? window.location.href : undefined
 export default class BaseDomSession implements ISession {
   private readonly actorName: string
   private readonly keepDom: boolean
-  private readonly mountApp: ($root: HTMLElement) => void
+  private readonly renderApp: ($root: HTMLElement) => void
   private $actor: HTMLElement
   public $root: HTMLElement
 
-  constructor(actorName: string, mountApp: ($root: HTMLElement) => void, keepDom: boolean) {
+  constructor(actorName: string, renderApp: ($root: HTMLElement) => void, keepDom: boolean) {
     this.actorName = actorName
-    this.mountApp = mountApp
+    this.renderApp = renderApp
     this.keepDom = keepDom
   }
 
@@ -25,7 +25,7 @@ export default class BaseDomSession implements ISession {
     document.body.appendChild(this.$actor)
     this.$root = document.createElement("div")
     this.$actor.appendChild(this.$root)
-    this.mountApp(this.$root)
+    this.renderApp(this.$root)
   }
 
   stop(): void {

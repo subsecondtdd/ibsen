@@ -4,7 +4,6 @@ import DirectSession from "../support/sessions/DirectSession"
 import getMicrodata from "../../src/getMicrodata"
 import assert from "assert"
 import DomSession from "../support/sessions/DomSession"
-import HttpSession from "../support/sessions/HttpSession"
 import ChatContext from "../support/sessions/ChatContext"
 
 const Said = (message: string) => (actorName: string) => ({chatApp}: ChatContext) => {
@@ -16,8 +15,6 @@ function Look() {
     DirectSession: async () => {
     },
     DomSession: async () => {
-    },
-    HttpSession: async () => {
     },
   }
 }
@@ -31,9 +28,6 @@ function Messages() {
     DomSession: async ({$root}: DomSession): Promise<string[]> => {
       const microdata = getMicrodata($root)
       return microdata.messages.map((m: any) => m.value)
-    },
-    HttpSession: async ({chatClient}: HttpSession): Promise<string[]> => {
-      return chatClient.getMessages()
     }
   }
 }

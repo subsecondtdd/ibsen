@@ -1,7 +1,12 @@
 import fetch from "node-fetch"
+import IChatApi from "./IChatApi"
 
-export default class ChatClient {
+export default class ChatClient implements IChatApi {
   constructor(private readonly baseurl: string) {
+  }
+
+  say(actorName: string, message: string): Promise<void> {
+    throw new Error("TODO")
   }
 
   public async getMessages(): Promise<string[]> {
