@@ -1,9 +1,9 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import App from "./App"
-import ChatApp from "./ChatApp"
+import IChatApi from "./IChatApi"
 
-export default function($root: HTMLElement, chatApp: ChatApp) {
-  ReactDOM.render(<App messages={chatApp.getMessages()}/>, $root)
+export default function($root: HTMLElement, chatApi: IChatApi) {
+  ReactDOM.render(<App chatApi={chatApi}/>, $root)
 }
 

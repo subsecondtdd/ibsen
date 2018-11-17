@@ -1,9 +1,11 @@
 import Actor from "./Actor"
 import ISession from "./ISession"
+import IContext from "./IContext"
 
 const SESSION = process.env.SESSION
 
 export default abstract class World {
+  private context: IContext
   private readonly actors = new Map<string, Actor>()
   protected readonly stoppables: Array<() => void> = []
 
@@ -21,13 +23,13 @@ export default abstract class World {
     await session.start()
     this.stoppables.push(session.stop.bind(session))
 
-    const actor = new Actor(actorName, this, session)
+    const actor = new Actor(actorName, this.context, session)
     this.actors.set(actorName, actor)
     return actor
   }
 
   async start() {
-    // no-op
+    this.context = await this.makeContext()
   }
 
   async stop() {
@@ -36,5 +38,7 @@ export default abstract class World {
     }
   }
 
-  public abstract makeSession(sessionType: string, actorName: string): Promise<ISession>
+  protected abstract makeContext(): Promise<IContext>
+
+  protected abstract makeSession(sessionType: string, actorName: string): Promise<ISession>
 }

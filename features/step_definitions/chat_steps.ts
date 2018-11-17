@@ -1,26 +1,15 @@
 import { Given, Then, When } from "cucumber"
 import Actor from "../../src/Actor"
 import DirectSession from "../support/sessions/DirectSession"
-import BaseDomSession from "../../src/BaseDomSession"
 import getMicrodata from "../../src/getMicrodata"
 import assert from "assert"
 import DomSession from "../support/sessions/DomSession"
 import HttpSession from "../support/sessions/HttpSession"
+import ChatContext from "../support/sessions/ChatContext"
 
-function Said(message: string) {
-  return {
-    DirectSession: async ({chatApp, actorName}: DirectSession) => {
-      chatApp.say(actorName, message)
-    },
-    DomSession: async ({chatApp, actorName}: DomSession) => {
-      chatApp.say(actorName, message)
-    },
-    HttpSession: async ({chatApp, actorName}: HttpSession) => {
-      chatApp.say(actorName, message)
-    },
-  }
+const Said = (message: string) => (actorName: string) => ({chatApp}: ChatContext) => {
+  return chatApp.say(actorName, message)
 }
-
 
 function Look() {
   return {
@@ -36,10 +25,10 @@ function Look() {
 
 function Messages() {
   return {
-    DirectSession: async ({chatApp}: DirectSession): Promise<string[]> => {
-      return chatApp.getMessages()
+    DirectSession: async ({chatApi}: DirectSession): Promise<string[]> => {
+      return chatApi.getMessages()
     },
-    DomSession: async ({$root}: BaseDomSession): Promise<string[]> => {
+    DomSession: async ({$root}: DomSession): Promise<string[]> => {
       const microdata = getMicrodata($root)
       return microdata.messages.map((m: any) => m.value)
     },
@@ -51,7 +40,8 @@ function Messages() {
 
 
 Given("{actor} has said {string}", async function (actor: Actor, message: string) {
-  await actor.has(Said(message))
+  const context = Said(message)
+  await actor.has(context)
 })
 
 When("{actor} looks at the messages", async function (actor: Actor) {

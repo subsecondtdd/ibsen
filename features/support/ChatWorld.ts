@@ -9,12 +9,19 @@ import DirectSession from "./sessions/DirectSession"
 import DomSession from "./sessions/DomSession"
 import HttpSession from "./sessions/HttpSession"
 import ChatClient from "../src/ChatClient"
+import ChatContext from "./sessions/ChatContext"
 
+// TODO: Move out
 function makeApp(chatApp: ChatApp) {
-  return (req: IncomingMessage, res: ServerResponse) => {
-    const messages = chatApp.getMessages()
-    res.writeHead(200, { "Content-Type": "application/json" })
-    res.end(JSON.stringify(messages))
+  return async (req: IncomingMessage, res: ServerResponse) => {
+    try {
+      const messages = await chatApp.getMessages()
+      res.writeHead(200, {"Content-Type": "application/json"})
+      res.end(JSON.stringify(messages))
+    } catch (e) {
+      res.writeHead(500, {"Content-Type": "text/plain"})
+      res.end(e.message)
+    }
   }
 }
 
@@ -26,7 +33,11 @@ class ChatWorld extends World {
     this.chatApp = new ChatApp()
   }
 
-  public async makeSession(sessionType: string, actorName: string): Promise<ISession> {
+  protected async makeContext(): Promise<ChatContext> {
+    return {chatApp: this.chatApp}
+  }
+
+  protected async makeSession(sessionType: string, actorName: string): Promise<ISession> {
     switch (sessionType) {
       case "DirectSession":
         return new DirectSession(actorName, this.chatApp)
@@ -47,7 +58,7 @@ class ChatWorld extends World {
         const port = addr.port
         const baseurl = `http://localhost:${port}`
         const chatClient = new ChatClient(baseurl)
-        return new HttpSession(actorName, this.chatApp, chatClient)
+        return new HttpSession(actorName, chatClient)
     }
   }
 }
