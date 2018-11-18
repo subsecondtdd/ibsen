@@ -1,13 +1,13 @@
 import { Given, Then, When } from "cucumber"
 import Actor from "../../src/Actor"
-import DomainSession from "../support/sessions/DomainSession"
+import DomainSession from "../../src/DomainSession"
 import getMicrodata from "../../src/getMicrodata"
 import assert from "assert"
 import { waitForElement } from "dom-testing-library"
-import DomSession from "../support/sessions/DomSession"
-import ChatContext from "../support/sessions/ChatContext"
+import DomSession from "../../src/DomSession"
+import ChatApp from "../src/ChatApp"
 
-const Said = (message: string) => (actorName: string) => ({chatApp}: ChatContext) => {
+const Said = (message: string) => (actorName: string) => (chatApp: ChatApp) => {
   return chatApp.say(actorName, message)
 }
 
@@ -21,11 +21,10 @@ function Look() {
   }
 }
 
-
 function Messages() {
   return {
-    DomainSession: async ({chatApi}: DomainSession): Promise<string[]> => {
-      return chatApi.getMessages()
+    DomainSession: async ({api}: DomainSession): Promise<string[]> => {
+      return api.getMessages()
     },
     DomSession: async ({$root}: DomSession): Promise<string[]> => {
       const microdata = getMicrodata($root)
@@ -33,7 +32,6 @@ function Messages() {
     }
   }
 }
-
 
 Given("{actor} has said {string}", async function (actor: Actor, message: string) {
   const context = Said(message)

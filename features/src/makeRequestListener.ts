@@ -1,16 +1,16 @@
-import ChatApp from "./ChatApp"
 import { IncomingMessage, ServerResponse } from "http"
+import IChatApi from "./IChatApi"
 
 /**
  * Makes a request listener that acts as a thin HTTP adapter in front of the application
  * This could be implemented using a framework like Express.
  *
- * @param chatApp the domain logic
+ * @param chatApi the domain logic
  */
-export default function makeRequestLinstener(chatApp: ChatApp) {
+export default function makeRequestLinstener(chatApi: IChatApi) {
   return async (req: IncomingMessage, res: ServerResponse) => {
     try {
-      const messages = await chatApp.getMessages()
+      const messages = await chatApi.getMessages()
       res.writeHead(200, {"Content-Type": "application/json"})
       res.end(JSON.stringify(messages))
     } catch (e) {

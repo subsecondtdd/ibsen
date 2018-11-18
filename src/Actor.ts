@@ -1,15 +1,14 @@
 import Interaction from "./Interaction"
 import ISession from "./ISession"
-import IDomainContext from "./IDomainContext"
 
-export default class Actor {
+export default class Actor<DomainApi = {}> {
   private readonly name: string
-  private readonly domainContext: IDomainContext
+  private readonly api: DomainApi
   private readonly session: ISession
 
-  constructor(name: string, domainContext: IDomainContext, session: ISession) {
+  constructor(name: string, api: DomainApi, session: ISession) {
     this.name = name
-    this.domainContext = domainContext
+    this.api = api
     this.session = session
   }
 
@@ -17,9 +16,9 @@ export default class Actor {
     return this.name
   }
 
-  public async has(actorNameFunction: (actorName: string) => (domainContext: IDomainContext) => Promise<void>): Promise<void> {
+  public async has(actorNameFunction: (actorName: string) => (api: DomainApi) => Promise<void>): Promise<void> {
     const contextFunction = await actorNameFunction(this.getName())
-    return contextFunction(this.domainContext)
+    return contextFunction(this.api)
   }
 
   public async attemptsTo(interaction: Interaction<void>): Promise<void> {

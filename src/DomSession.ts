@@ -2,17 +2,15 @@ import ISession from "./ISession"
 
 const loc = (typeof window === "object") ? window.location.href : undefined
 
-export default class BaseDomSession implements ISession {
+export default class DomSession implements ISession {
   private readonly actorName: string
-  private readonly keepDom: boolean
   private readonly renderApp: ($root: HTMLElement) => void
   private $actor: HTMLElement
   public $root: HTMLElement
 
-  constructor(actorName: string, renderApp: ($root: HTMLElement) => void, keepDom: boolean) {
+  constructor(actorName: string, renderApp: ($root: HTMLElement) => void) {
     this.actorName = actorName
     this.renderApp = renderApp
-    this.keepDom = keepDom
   }
 
   start(): void {
@@ -29,9 +27,6 @@ export default class BaseDomSession implements ISession {
   }
 
   stop(): void {
-    if (this.keepDom) {
-      return
-    }
     this.$actor.parentNode.removeChild(this.$actor)
   }
 }
