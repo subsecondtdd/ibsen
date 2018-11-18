@@ -7,7 +7,7 @@ import IChatApi from "./IChatApi"
  *
  * @param chatApi the domain logic
  */
-export default function makeRequestLinstener(chatApi: IChatApi) {
+export default function (chatApi: IChatApi) {
   return async (req: IncomingMessage, res: ServerResponse) => {
     try {
       const messages = await chatApi.getMessages()

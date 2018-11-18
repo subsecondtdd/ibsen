@@ -11,7 +11,7 @@ const Said = (message: string) => (actorName: string) => (chatApp: ChatApp) => {
   return chatApp.say(actorName, message)
 }
 
-function Look() {
+function LookAtMessages() {
   return {
     DomainSession: async () => {
     },
@@ -34,12 +34,11 @@ function Messages() {
 }
 
 Given("{actor} has said {string}", async function (actor: Actor, message: string) {
-  const context = Said(message)
-  await actor.has(context)
+  await actor.has(Said(message))
 })
 
 When("{actor} looks at the messages", async function (actor: Actor) {
-  await actor.attemptsTo(Look())
+  await actor.attemptsTo(LookAtMessages())
 })
 
 Then("{actor} should see {string}", async function (actor: Actor, message: string) {
