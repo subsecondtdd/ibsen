@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react"
-import IChatApi from "./IChatApi"
+import IChatApi from "../domain/IChatApi"
 
 interface IAppProps {
   chatApi: IChatApi

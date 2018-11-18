@@ -1,11 +1,11 @@
 import { IncomingMessage, ServerResponse } from "http"
 import ibsen from "../../src/World"
 import { After, Before, setWorldConstructor } from "cucumber"
-import ChatApp from "../src/ChatApp"
-import IChatApi from "../src/IChatApi"
-import makeChatListener from "../src/makeChatListener"
-import renderApp from "../src/renderApp"
-import ChatClient from "../src/ChatClient"
+import ChatApp from "../src/domain/ChatApp"
+import IChatApi from "../src/domain/IChatApi"
+import makeChatListener from "../src/server/makeChatListener"
+import renderApp from "../src/client/renderApp"
+import ChatClient from "../src/client/ChatClient"
 
 ibsen<IChatApi>({
   makeDomainApi(): IChatApi {

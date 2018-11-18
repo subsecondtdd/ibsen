@@ -1,7 +1,7 @@
 import ISession from "./ISession"
 
-export default class DomainSession implements ISession {
-  constructor(public actorName: string, public api: any) {
+export default class DomainSession<Api> implements ISession {
+  constructor(public actorName: string, public api: Api) {
   }
 
   start(): void {

@@ -1,5 +1,5 @@
 import fetch from "node-fetch"
-import IChatApi from "./IChatApi"
+import IChatApi from "../domain/IChatApi"
 
 export default class ChatClient implements IChatApi {
   constructor(private readonly baseurl: string) {
