@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-echo -e "\n🥒 ⚛️ ☁️  dom-http"
-SESSION=DomSession CHAT_API=ChatClient NODE_ENV=production node node_modules/.bin/cucumber-electron "$@"
+echo -e "\n🥒 🕹️️  ☁️  dom-http"
+SESSION=DomSession API=HTTP node node_modules/.bin/cucumber-electron "$@"

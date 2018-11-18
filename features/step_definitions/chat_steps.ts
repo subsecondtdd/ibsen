@@ -1,6 +1,6 @@
 import { Given, Then, When } from "cucumber"
 import Actor from "../../src/Actor"
-import DirectSession from "../support/sessions/DirectSession"
+import DomainSession from "../support/sessions/DomainSession"
 import getMicrodata from "../../src/getMicrodata"
 import assert from "assert"
 import { waitForElement } from "dom-testing-library"
@@ -13,7 +13,7 @@ const Said = (message: string) => (actorName: string) => ({chatApp}: ChatContext
 
 function Look() {
   return {
-    DirectSession: async () => {
+    DomainSession: async () => {
     },
     DomSession: async ({$root}: DomSession) => {
       await waitForElement(() => $root.querySelector("li"), ({container: $root}))
@@ -24,7 +24,7 @@ function Look() {
 
 function Messages() {
   return {
-    DirectSession: async ({chatApi}: DirectSession): Promise<string[]> => {
+    DomainSession: async ({chatApi}: DomainSession): Promise<string[]> => {
       return chatApi.getMessages()
     },
     DomSession: async ({$root}: DomSession): Promise<string[]> => {

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+echo -e "\n🥒 🕹️️  🔌 dom-direct"
+SESSION=DomSession API=Direct node node_modules/.bin/cucumber-electron "$@"

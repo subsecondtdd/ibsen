@@ -5,14 +5,14 @@ import World from "../../src/World"
 import { After, Before, setWorldConstructor } from "cucumber"
 import ChatApp from "../src/ChatApp"
 import ISession from "../../src/ISession"
-import DirectSession from "./sessions/DirectSession"
+import DomainSession from "./sessions/DomainSession"
 import DomSession from "./sessions/DomSession"
 import ChatClient from "../src/ChatClient"
 import ChatContext from "./sessions/ChatContext"
 import IChatApi from "../src/IChatApi"
 import makeRequestListener from "../src/makeRequestListener"
 
-const CHAT_API = process.env.CHAT_API
+const API = process.env.API
 
 class ChatWorld extends World {
   private readonly chatApp: ChatApp
@@ -27,28 +27,26 @@ class ChatWorld extends World {
   }
 
   protected async makeSession(sessionType: string, actorName: string): Promise<ISession> {
-    const chatApi = await this.makeChatApi(CHAT_API)
+    const api = await this.makeApi(API)
 
     switch (sessionType) {
-      case "DirectSession":
-        return new DirectSession(actorName, chatApi)
+      case "DomainSession":
+        return new DomainSession(actorName, api)
 
       case "DomSession":
-        return new DomSession(actorName, chatApi)
+        return new DomSession(actorName, api)
 
       default:
         throw new Error(`Unsupported Session: ${sessionType}`)
     }
   }
 
-  protected async makeChatApi(chatApiType: string): Promise<IChatApi> {
+  protected async makeApi(chatApiType: string): Promise<IChatApi> {
     switch (chatApiType) {
-      // TODO: Direct or HTTP
-
-      case "ChatApp":
+      case "Direct":
         return this.chatApp
 
-      case "ChatClient":
+      case "HTTP":
         const app = makeRequestListener(this.chatApp)
         // TODO: Extract this
         const server = http.createServer(app)

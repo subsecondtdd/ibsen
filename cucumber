@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-echo -e "\n🥒  domain"
-SESSION=DirectSession CHAT_API=ChatApp node node_modules/.bin/cucumber-js "$@"

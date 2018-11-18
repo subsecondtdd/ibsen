@@ -1,11 +1,11 @@
 import Actor from "./Actor"
 import ISession from "./ISession"
-import IContext from "./IContext"
+import IDomainContext from "./IDomainContext"
 
 const SESSION = process.env.SESSION
 
 export default abstract class World {
-  private context: IContext
+  private context: IDomainContext
   private readonly actors = new Map<string, Actor>()
   protected readonly stoppables: Array<() => void> = []
 
@@ -38,7 +38,7 @@ export default abstract class World {
     }
   }
 
-  protected abstract makeContext(): Promise<IContext>
+  protected abstract makeContext(): Promise<IDomainContext>
 
   protected abstract makeSession(sessionType: string, actorName: string): Promise<ISession>
 }
