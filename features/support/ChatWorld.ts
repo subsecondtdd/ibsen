@@ -48,7 +48,6 @@ class ChatWorld extends World {
 
       case "HTTP":
         const app = makeRequestListener(this.chatApp)
-        // TODO: Extract this
         const server = http.createServer(app)
         const listen = promisify(server.listen.bind(server))
         await listen()
