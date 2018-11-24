@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react"
+import React, { ReactNode, useState } from "react"
 import IChatApi from "../domain/IChatApi"
 
 interface IAppProps {
@@ -14,20 +14,41 @@ class App extends React.Component<IAppProps, IState> {
     messages: [] as string[],
   }
 
-  async componentDidMount() {
-    try {
-      const messages = await this.props.chatApi.getMessages()
-      this.setState({messages});
-    } catch (e) {
-      console.error(e)
-    }
+  componentDidMount(): void {
+    this.loadMessages()
   }
 
   render(): ReactNode {
     return <div itemScope={true}>
+      <MessageForm chatApi={this.props.chatApi}/>
       <MessageList messages={this.state.messages}/>
     </div>
   }
+
+  private async loadMessages() {
+    try {
+      const messages = await this.props.chatApi.getMessages()
+      this.setState({messages})
+    } catch (e) {
+      console.error(e)
+    }
+  }
+}
+
+const MessageForm: React.FunctionComponent<IAppProps> = ({chatApi}) => {
+  const [value, setValue] = useState("")
+
+  async function submitMessage(value: string) {
+    await chatApi.say("Sean", value)
+  }
+
+  return <form onSubmit={e => {
+    e.preventDefault()
+    submitMessage(value)
+    setValue("")
+  }}>
+    <input value={value} onChange={e => setValue(e.target.value)}/>
+  </form>
 }
 
 const MessageList: React.FunctionComponent<{ messages: string[] }> = ({messages}) => (

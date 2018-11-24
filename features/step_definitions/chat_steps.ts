@@ -2,7 +2,7 @@ import assert from "assert"
 import { Given, Then, When } from "cucumber"
 import Actor from "../../src/Actor"
 import { Said } from "../support/contexts"
-import { LookAtMessages } from "../support/actions"
+import { LookAtMessages, Say } from "../support/actions"
 import { Messages } from "../support/outcomes"
 
 Given("{actor} has said {string}", async function (actor: Actor, message: string) {
@@ -11,6 +11,10 @@ Given("{actor} has said {string}", async function (actor: Actor, message: string
 
 When("{actor} looks at the messages", async function (actor: Actor) {
   await actor.attemptsTo(LookAtMessages())
+})
+
+When("{actor} says {string}", async function (actor: Actor, message: string) {
+  await actor.attemptsTo(Say(message))
 })
 
 Then("{actor} should see {string}", async function (actor: Actor, message: string) {

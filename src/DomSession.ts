@@ -27,6 +27,6 @@ export default class DomSession implements ISession {
   }
 
   stop(): void {
-    this.$actor.parentNode.removeChild(this.$actor)
+    // this.$actor.parentNode.removeChild(this.$actor)
   }
 }
