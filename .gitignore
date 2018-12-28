@@ -61,4 +61,3 @@ typings/
 .next
 .idea/
 yarn.lock
-dist/
