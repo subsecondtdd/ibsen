@@ -1,7 +1,6 @@
 import webdriverio from "webdriverio"
-import Actor from "./Actor"
 import getMicrodata from "./getMicrodata"
-import ISession from "./ISession"
+import { ISession } from "./types"
 
 /**
  * The Dom Actor interacts with the Dom. It also has a reference to the codebreaker, so it can query for its

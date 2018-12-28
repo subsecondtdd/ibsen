@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from "http"
-import ibsen from "../../src/World"
+import ibsen from "../../src/ibsen"
 import { After, Before, setWorldConstructor } from "cucumber"
 import ChatApp from "../src/domain/ChatApp"
 import IChatApi from "../src/domain/IChatApi"
@@ -9,7 +9,7 @@ import ChatClient from "../src/client/ChatClient"
 
 ibsen<IChatApi>({
   makeDomainApi(): IChatApi {
-    return new ChatApp();
+    return new ChatApp()
   },
 
   makeHttpApi(baseurl: string): IChatApi {

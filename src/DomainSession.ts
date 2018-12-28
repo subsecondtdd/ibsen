@@ -1,4 +1,4 @@
-import ISession from "./ISession"
+import { ISession } from "./types"
 
 export default class DomainSession<Api> implements ISession {
   constructor(public actorName: string, public api: Api) {

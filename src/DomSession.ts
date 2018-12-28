@@ -1,4 +1,4 @@
-import ISession from "./ISession"
+import { ISession } from "./types"
 
 const loc = (typeof window === "object") ? window.location.href : undefined
 

@@ -2,12 +2,13 @@
   "name": "ibsen",
   "version": "0.0.1",
   "description": "Sub-Second TDD framework for Node.js and browser",
-  "main": "index.js",
+  "main": "dist/ibsen.js",
   "repository": "git@github.com:subsecondtdd/ibsen.git",
   "author": "Aslak Hellesøy <aslak.hellesoy@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "./cucumber"
   },
   "devDependencies": {
     "@types/cucumber": "^4.0.4",

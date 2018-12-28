@@ -1,16 +1,18 @@
 import Actor from "./Actor"
-import ISession from "./ISession"
 import DomainSession from "./DomainSession"
 import DomSession from "./DomSession"
 import http, { IncomingMessage, ServerResponse } from "http"
 import { promisify } from "util"
 import { AddressInfo } from "net"
 import { After, Before, setWorldConstructor } from "cucumber"
+import { Interaction, ISession } from "./types"
 
 const SESSION = process.env.SESSION
 const API = process.env.API
 
-interface IbsenOption<Api> {
+export { Actor, DomainSession, DomSession, Interaction }
+
+interface IbsenOptions<Api> {
   makeRenderApp: (api: Api) => ($root: HTMLElement) => void
 
   makeDomainApi: () => Api
@@ -20,7 +22,7 @@ interface IbsenOption<Api> {
   makeRequestListener: (api: Api) => (request: IncomingMessage, response: ServerResponse) => void
 }
 
-export default function ibsen<Api>(options: IbsenOption<Api>) {
+export default function ibsen<Api>(options: IbsenOptions<Api>) {
   class World {
     private domainApi: Api
     private readonly actors = new Map<string, Actor<Api>>()

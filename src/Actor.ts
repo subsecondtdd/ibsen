@@ -1,12 +1,11 @@
-import Interaction from "./Interaction"
-import ISession from "./ISession"
+import { Context, Interaction, ISession } from "./types"
 
-export default class Actor<DomainApi = {}> {
+export default class Actor<Api = {}> {
   private readonly name: string
-  private readonly api: DomainApi
+  private readonly api: Api
   private readonly session: ISession
 
-  constructor(name: string, api: DomainApi, session: ISession) {
+  constructor(name: string, api: Api, session: ISession) {
     this.name = name
     this.api = api
     this.session = session
@@ -16,23 +15,30 @@ export default class Actor<DomainApi = {}> {
     return this.name
   }
 
-  public async has(actorNameFunction: (actorName: string) => (api: DomainApi) => Promise<void>): Promise<void> {
-    const contextFunction = await actorNameFunction(this.getName())
-    return contextFunction(this.api)
+  /**
+   * Use this in Given steps to set up a context
+   *
+   * @param context a function that sets up context
+   */
+  public async has(context: Context<Api>): Promise<void> {
+    await context(this.api, this.getName())
   }
 
+  /**
+   * Use this in When steps to set up a context
+   *
+   * @param interaction a function that interacts with the system via a {@link ISession}
+   */
   public async attemptsTo(interaction: Interaction<void>): Promise<void> {
-    return this.callSessionFunction(interaction)
+    return interaction(this.session)
   }
 
+  /**
+   * Use this in Then steps to pull data out of the system (e.g. using a view)
+   *
+   * @param interaction a function that interacts with the system via a {@link ISession}
+   */
   public async check<T>(interaction: Interaction<T>): Promise<T> {
-    return this.callSessionFunction(interaction)
-  }
-
-  private async callSessionFunction<T>(interaction: Interaction<T>): Promise<T> {
-    const key = this.session.constructor.name
-    const sessionFunction = interaction[key]
-    if (!sessionFunction) throw new Error(`No ${key} in ${Object.keys(interaction)}`)
-    return sessionFunction(this.session)
+    return interaction(this.session)
   }
 }
