@@ -1,16 +1,16 @@
 /// <reference types="node" />
 import Actor from "./Actor";
-import DomainSession from "./DomainSession";
+import ApiSession from "./ApiSession";
 import DomSession from "./DomSession";
 import { IncomingMessage, ServerResponse } from "http";
 import { Interaction, ISession } from "./types";
-export { Actor, DomainSession, DomSession, Interaction };
+export { Actor, ApiSession, DomSession, Interaction };
 interface IbsenOptions<Api> {
     makeRenderApp: (api: Api) => ($root: HTMLElement) => void;
     makeDomainApi: () => Api;
     makeHttpApi: (baseurl: string) => Api;
     makeRequestListener: (api: Api) => (request: IncomingMessage, response: ServerResponse) => void;
-    makeSession?: (sessionType: string, actorName: string) => Promise<ISession>;
-    makeDomainSession?: (actorName: string, api: Api) => Promise<DomainSession<Api>>;
+    makeSession?: (sessionType: string, actorName: string) => ISession;
+    makeDomainSession?: (actorName: string, api: Api) => ApiSession<Api>;
 }
 export default function ibsen<Api>(options: IbsenOptions<Api>): void;

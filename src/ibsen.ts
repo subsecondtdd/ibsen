@@ -1,5 +1,5 @@
 import Actor from "./Actor"
-import DomainSession from "./DomainSession"
+import ApiSession from "./ApiSession"
 import DomSession from "./DomSession"
 import http, { IncomingMessage, ServerResponse } from "http"
 import { promisify } from "util"
@@ -10,7 +10,7 @@ import { Interaction, ISession } from "./types"
 const SESSION = process.env.SESSION
 const API = process.env.API
 
-export { Actor, DomainSession, DomSession, Interaction }
+export { Actor, ApiSession, DomSession, Interaction }
 
 interface IbsenOptions<Api> {
   makeRenderApp: (api: Api) => ($root: HTMLElement) => void
@@ -23,17 +23,17 @@ interface IbsenOptions<Api> {
 
   makeSession?: (sessionType: string, actorName: string) => ISession
 
-  makeDomainSession?: (actorName: string, api: Api) => DomainSession<Api>
+  makeDomainSession?: (actorName: string, api: Api) => ApiSession<Api>
 }
 
 export default function ibsen<Api>(options: IbsenOptions<Api>) {
   function defaultMakeDomainSession(actorName: string, api: Api) {
-    return new DomainSession(actorName, api)
+    return new ApiSession(actorName, api)
   }
 
   function defaultMakeSession(sessionType: string, actorName: string, api: Api): ISession {
     switch (sessionType) {
-      case "DomainSession":
+      case "ApiSession":
         const makeDomainSession = options.makeDomainSession || defaultMakeDomainSession
         return makeDomainSession(actorName, api)
 

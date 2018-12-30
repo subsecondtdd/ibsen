@@ -40,8 +40,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Actor_1 = __importDefault(require("./Actor"));
 exports.Actor = Actor_1.default;
-var DomainSession_1 = __importDefault(require("./DomainSession"));
-exports.DomainSession = DomainSession_1.default;
+var ApiSession_1 = __importDefault(require("./ApiSession"));
+exports.ApiSession = ApiSession_1.default;
 var DomSession_1 = __importDefault(require("./DomSession"));
 exports.DomSession = DomSession_1.default;
 var http_1 = __importDefault(require("http"));
@@ -51,28 +51,18 @@ var SESSION = process.env.SESSION;
 var API = process.env.API;
 function ibsen(options) {
     function defaultMakeDomainSession(actorName, api) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, new DomainSession_1.default(actorName, api)];
-            });
-        });
+        return new ApiSession_1.default(actorName, api);
     }
     function defaultMakeSession(sessionType, actorName, api) {
-        return __awaiter(this, void 0, void 0, function () {
-            var makeDomainSession;
-            return __generator(this, function (_a) {
-                switch (sessionType) {
-                    case "DomainSession":
-                        makeDomainSession = options.makeDomainSession || defaultMakeDomainSession;
-                        return [2 /*return*/, makeDomainSession(actorName, api)];
-                    case "DomSession":
-                        return [2 /*return*/, new DomSession_1.default(actorName, options.makeRenderApp(api))];
-                    default:
-                        throw new Error("Unsupported Session: " + sessionType);
-                }
-                return [2 /*return*/];
-            });
-        });
+        switch (sessionType) {
+            case "ApiSession":
+                var makeDomainSession = options.makeDomainSession || defaultMakeDomainSession;
+                return makeDomainSession(actorName, api);
+            case "DomSession":
+                return new DomSession_1.default(actorName, options.makeRenderApp(api));
+            default:
+                throw new Error("Unsupported Session: " + sessionType);
+        }
     }
     var World = /** @class */ (function () {
         function World() {
@@ -94,14 +84,12 @@ function ibsen(options) {
                         case 1:
                             api = _a.sent();
                             makeSession = options.makeSession || defaultMakeSession;
-                            return [4 /*yield*/, makeSession(SESSION, actorName, api)];
-                        case 2:
-                            session = _a.sent();
+                            session = makeSession(SESSION, actorName, api);
                             if (!session) {
                                 throw new Error("No " + SESSION + " defined in " + this.constructor.name);
                             }
                             return [4 /*yield*/, session.start()];
-                        case 3:
+                        case 2:
                             _a.sent();
                             this.stoppables.push(session.stop.bind(session));
                             actor = new Actor_1.default(actorName, this.domainApi, session);

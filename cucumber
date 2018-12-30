@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-./cucumber-domain-direct && \
+./cucumber-api-direct && \
 ./cucumber-dom-direct && \
-./cucumber-domain-http && \
+./cucumber-api-http && \
 ./cucumber-dom-http
 
 

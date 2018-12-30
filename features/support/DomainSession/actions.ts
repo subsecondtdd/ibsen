@@ -1,12 +1,12 @@
 import IChatApi from "../../src/domain/IChatApi"
-import { DomainSession, Interaction } from "../../../src/ibsen"
+import { ApiSession, Interaction } from "../../../src/ibsen"
 
 export function LookAtMessages(): Interaction<void> {
-  return (session: DomainSession<IChatApi>) => undefined
+  return (session: ApiSession<IChatApi>) => undefined
 }
 
 export function Say(message: string) {
-  return async ({actorName, api}: DomainSession<IChatApi>) => {
+  return async ({actorName, api}: ApiSession<IChatApi>) => {
     await api.say(actorName, message)
   }
 }

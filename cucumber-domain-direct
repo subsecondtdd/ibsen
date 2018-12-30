@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-echo -e "\n🥒 💰 🔌 domain-direct"
-SESSION=DomainSession API=Direct node node_modules/.bin/cucumber-js "$@"

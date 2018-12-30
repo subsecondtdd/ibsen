@@ -12,4 +12,4 @@ var DomainSession = /** @class */ (function () {
     return DomainSession;
 }());
 exports.default = DomainSession;
-//# sourceMappingURL=DomainSession.js.map
+//# sourceMappingURL=ApiSession.js.map
