@@ -1,11 +1,11 @@
-import { Context, Interaction, ISession } from "./types"
+import { Context, Interaction } from "./types"
 
-export default class Actor<Api = {}> {
+export default class Actor<Api = {}, Session = {}> {
   private readonly name: string
   private readonly api: Api
-  private readonly session: ISession
+  private readonly session: Session
 
-  constructor(name: string, api: Api, session: ISession) {
+  constructor(name: string, api: Api, session: Session) {
     this.name = name
     this.api = api
     this.session = session
@@ -29,7 +29,7 @@ export default class Actor<Api = {}> {
    *
    * @param interaction a function that interacts with the system via a {@link ISession}
    */
-  public async attemptsTo(interaction: Interaction<void>): Promise<void> {
+  public async attemptsTo(interaction: Interaction<Session, void>): Promise<void> {
     return interaction(this.session)
   }
 
@@ -38,7 +38,7 @@ export default class Actor<Api = {}> {
    *
    * @param interaction a function that interacts with the system via a {@link ISession}
    */
-  public async check<T>(interaction: Interaction<T>): Promise<T> {
+  public async check<Result>(interaction: Interaction<Session, Result>): Promise<Result> {
     return interaction(this.session)
   }
 }

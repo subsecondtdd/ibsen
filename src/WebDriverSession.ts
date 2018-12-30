@@ -1,12 +1,11 @@
 import webdriverio from "webdriverio"
 import getMicrodata from "./getMicrodata"
-import { ISession } from "./types"
 
 /**
  * The Dom Actor interacts with the Dom. It also has a reference to the codebreaker, so it can query for its
  * version. This is used to wait for synchronisation before interacting with the DOM.
  */
-export default class WebDriverSession implements ISession {
+export default class WebDriverSession {
   private readonly baseUrl: string
   private browser: WebdriverIO.Client<void>
 

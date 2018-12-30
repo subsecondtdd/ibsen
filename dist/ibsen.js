@@ -40,30 +40,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Actor_1 = __importDefault(require("./Actor"));
 exports.Actor = Actor_1.default;
-var ApiSession_1 = __importDefault(require("./ApiSession"));
-exports.ApiSession = ApiSession_1.default;
-var DomSession_1 = __importDefault(require("./DomSession"));
-exports.DomSession = DomSession_1.default;
 var http_1 = __importDefault(require("http"));
 var util_1 = require("util");
 var cucumber_1 = require("cucumber");
 var SESSION = process.env.SESSION;
 var API = process.env.API;
+var KEEP_DOM = !!process.env.KEEP_DOM;
 function ibsen(options) {
-    function defaultMakeApiSession(actorName, api) {
-        return new ApiSession_1.default(actorName, api);
-    }
-    function defaultMakeSession(sessionType, actorName, api) {
-        switch (sessionType) {
-            case "ApiSession":
-                var makeDomainSession = options.makeApiSession || defaultMakeApiSession;
-                return makeDomainSession(actorName, api);
-            case "DomSession":
-                return new DomSession_1.default(actorName, options.makeRenderApp(api));
-            default:
-                throw new Error("Unsupported Session: " + sessionType);
-        }
-    }
     var World = /** @class */ (function () {
         function World() {
             this.actors = new Map();
@@ -71,7 +54,7 @@ function ibsen(options) {
         }
         World.prototype.getActor = function (actorName) {
             return __awaiter(this, void 0, void 0, function () {
-                var api, makeSession, session, actor;
+                var api, session, actor;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -83,15 +66,10 @@ function ibsen(options) {
                             return [4 /*yield*/, this.makeApi(API)];
                         case 1:
                             api = _a.sent();
-                            makeSession = options.makeSession || defaultMakeSession;
-                            session = makeSession(SESSION, actorName, api);
+                            session = this.makeSession(SESSION, actorName, api);
                             if (!session) {
                                 throw new Error("No " + SESSION + " defined in " + this.constructor.name);
                             }
-                            return [4 /*yield*/, session.start()];
-                        case 2:
-                            _a.sent();
-                            this.stoppables.push(session.stop.bind(session));
                             actor = new Actor_1.default(actorName, this.domainApi, session);
                             this.actors.set(actorName, actor);
                             return [2 /*return*/, actor];
@@ -179,6 +157,39 @@ function ibsen(options) {
                     }
                 });
             });
+        };
+        World.prototype.makeSession = function (sessionType, actorName, api) {
+            switch (sessionType) {
+                case "ApiSession":
+                    return options.makeApiSession(actorName, api);
+                case "DomSession":
+                    var $actor = this.makeActorNode(actorName);
+                    var renderApp = options.makeRenderApp(api);
+                    renderApp($actor);
+                    return options.makeDomSession(actorName, $actor);
+                default:
+                    throw new Error("Unsupported Session: " + sessionType);
+            }
+        };
+        World.prototype.makeActorNode = function (actorName) {
+            var _this = this;
+            var loc = (typeof window === "object") ? window.location.href : undefined;
+            // Prevent previous scenario's URL from interfering
+            window.history.pushState(undefined, undefined, loc);
+            var $actor = document.createElement("div");
+            $actor.innerHTML = "<h1>" + actorName + "</h1>";
+            document.body.appendChild($actor);
+            var $root = document.createElement("div");
+            $actor.appendChild($root);
+            if (!KEEP_DOM) {
+                this.stoppables.push(function () { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        $actor.remove();
+                        return [2 /*return*/];
+                    });
+                }); });
+            }
+            return $root;
         };
         return World;
     }());
