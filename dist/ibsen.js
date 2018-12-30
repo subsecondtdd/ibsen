@@ -50,13 +50,13 @@ var cucumber_1 = require("cucumber");
 var SESSION = process.env.SESSION;
 var API = process.env.API;
 function ibsen(options) {
-    function defaultMakeDomainSession(actorName, api) {
+    function defaultMakeApiSession(actorName, api) {
         return new ApiSession_1.default(actorName, api);
     }
     function defaultMakeSession(sessionType, actorName, api) {
         switch (sessionType) {
             case "ApiSession":
-                var makeDomainSession = options.makeDomainSession || defaultMakeDomainSession;
+                var makeDomainSession = options.makeApiSession || defaultMakeApiSession;
                 return makeDomainSession(actorName, api);
             case "DomSession":
                 return new DomSession_1.default(actorName, options.makeRenderApp(api));

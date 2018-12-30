@@ -11,6 +11,6 @@ interface IbsenOptions<Api> {
     makeHttpApi: (baseurl: string) => Api;
     makeRequestListener: (api: Api) => (request: IncomingMessage, response: ServerResponse) => void;
     makeSession?: (sessionType: string, actorName: string) => ISession;
-    makeDomainSession?: (actorName: string, api: Api) => ApiSession<Api>;
+    makeApiSession?: (actorName: string, api: Api) => ApiSession<Api>;
 }
 export default function ibsen<Api>(options: IbsenOptions<Api>): void;

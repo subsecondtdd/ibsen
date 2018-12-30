@@ -23,18 +23,18 @@ interface IbsenOptions<Api> {
 
   makeSession?: (sessionType: string, actorName: string) => ISession
 
-  makeDomainSession?: (actorName: string, api: Api) => ApiSession<Api>
+  makeApiSession?: (actorName: string, api: Api) => ApiSession<Api>
 }
 
 export default function ibsen<Api>(options: IbsenOptions<Api>) {
-  function defaultMakeDomainSession(actorName: string, api: Api) {
+  function defaultMakeApiSession(actorName: string, api: Api) {
     return new ApiSession(actorName, api)
   }
 
   function defaultMakeSession(sessionType: string, actorName: string, api: Api): ISession {
     switch (sessionType) {
       case "ApiSession":
-        const makeDomainSession = options.makeDomainSession || defaultMakeDomainSession
+        const makeDomainSession = options.makeApiSession || defaultMakeApiSession
         return makeDomainSession(actorName, api)
 
       case "DomSession":
