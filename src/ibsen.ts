@@ -21,17 +21,17 @@ interface IbsenOptions<Api> {
 
   makeRequestListener: (api: Api) => (request: IncomingMessage, response: ServerResponse) => void
 
-  makeSession?: (sessionType: string, actorName: string) => Promise<ISession>
+  makeSession?: (sessionType: string, actorName: string) => ISession
 
-  makeDomainSession?: (actorName: string, api: Api) => Promise<DomainSession<Api>>
+  makeDomainSession?: (actorName: string, api: Api) => DomainSession<Api>
 }
 
 export default function ibsen<Api>(options: IbsenOptions<Api>) {
-  async function defaultMakeDomainSession(actorName: string, api: Api) {
+  function defaultMakeDomainSession(actorName: string, api: Api) {
     return new DomainSession(actorName, api)
   }
 
-  async function defaultMakeSession(sessionType: string, actorName: string, api: Api): Promise<ISession> {
+  function defaultMakeSession(sessionType: string, actorName: string, api: Api): ISession {
     switch (sessionType) {
       case "DomainSession":
         const makeDomainSession = options.makeDomainSession || defaultMakeDomainSession
@@ -59,7 +59,7 @@ export default function ibsen<Api>(options: IbsenOptions<Api>) {
 
       const api = await this.makeApi(API)
       const makeSession = options.makeSession || defaultMakeSession
-      const session = await makeSession(SESSION, actorName, api)
+      const session = makeSession(SESSION, actorName, api)
       if (!session) {
         throw new Error(`No ${SESSION} defined in ${this.constructor.name}`)
       }
