@@ -20,9 +20,31 @@ interface IbsenOptions<Api> {
   makeHttpApi: (baseurl: string) => Api
 
   makeRequestListener: (api: Api) => (request: IncomingMessage, response: ServerResponse) => void
+
+  makeSession?: (sessionType: string, actorName: string) => Promise<ISession>
+
+  makeDomainSession?: (actorName: string, api: Api) => Promise<DomainSession<Api>>
 }
 
 export default function ibsen<Api>(options: IbsenOptions<Api>) {
+  async function defaultMakeDomainSession(actorName: string, api: Api) {
+    return new DomainSession(actorName, api)
+  }
+
+  async function defaultMakeSession(sessionType: string, actorName: string, api: Api): Promise<ISession> {
+    switch (sessionType) {
+      case "DomainSession":
+        const makeDomainSession = options.makeDomainSession || defaultMakeDomainSession
+        return makeDomainSession(actorName, api)
+
+      case "DomSession":
+        return new DomSession(actorName, options.makeRenderApp(api))
+
+      default:
+        throw new Error(`Unsupported Session: ${sessionType}`)
+    }
+  }
+
   class World {
     private domainApi: Api
     private readonly actors = new Map<string, Actor<Api>>()
@@ -35,7 +57,9 @@ export default function ibsen<Api>(options: IbsenOptions<Api>) {
         throw new Error(`Please define the $SESSION environment variable`)
       }
 
-      const session = await this.makeSession(SESSION, actorName)
+      const api = await this.makeApi(API)
+      const makeSession = options.makeSession || defaultMakeSession
+      const session = await makeSession(SESSION, actorName, api)
       if (!session) {
         throw new Error(`No ${SESSION} defined in ${this.constructor.name}`)
       }
@@ -57,23 +81,8 @@ export default function ibsen<Api>(options: IbsenOptions<Api>) {
       }
     }
 
-    protected async makeSession(sessionType: string, actorName: string): Promise<ISession> {
-      const api = await this.makeApi(API)
-
-      switch (sessionType) {
-        case "DomainSession":
-          return new DomainSession(actorName, api)
-
-        case "DomSession":
-          return new DomSession(actorName, options.makeRenderApp(api))
-
-        default:
-          throw new Error(`Unsupported Session: ${sessionType}`)
-      }
-    }
-
-    protected async makeApi(chatApiType: string): Promise<Api> {
-      switch (chatApiType) {
+    protected async makeApi(apiType: string): Promise<Api> {
+      switch (apiType) {
         case "Direct":
           return this.domainApi
 
@@ -92,7 +101,7 @@ export default function ibsen<Api>(options: IbsenOptions<Api>) {
           return options.makeHttpApi(baseurl)
 
         default:
-          throw new Error(`Unsupported ChatApi: ${chatApiType}`)
+          throw new Error(`Unsupported Api: ${apiType}`)
       }
     }
   }

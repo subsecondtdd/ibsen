@@ -17,10 +17,10 @@
     "@types/react": "^16.7.6",
     "@types/react-dom": "^16.0.9",
     "@types/webdriverio": "^4.13.0",
-    "cucumber": "^5.0.2",
+    "cucumber": "^5.1.0",
     "cucumber-electron": "^2.5.0",
     "dom-testing-library": "^3.12.3",
-    "electron": "^3.0.8",
+    "electron": "^4.0.0",
     "express": "^4.16.4",
     "node-fetch": "^2.3.0",
     "react": "^16.7.0-alpha.2",
@@ -29,6 +29,6 @@
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "typescript": "^3.1.6",
-    "webdriverio": "^4.14.0"
+    "webdriverio": "^5.1.0"
   }
 }

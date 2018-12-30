@@ -50,6 +50,30 @@ var cucumber_1 = require("cucumber");
 var SESSION = process.env.SESSION;
 var API = process.env.API;
 function ibsen(options) {
+    function defaultMakeDomainSession(actorName, api) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new DomainSession_1.default(actorName, api)];
+            });
+        });
+    }
+    function defaultMakeSession(sessionType, actorName, api) {
+        return __awaiter(this, void 0, void 0, function () {
+            var makeDomainSession;
+            return __generator(this, function (_a) {
+                switch (sessionType) {
+                    case "DomainSession":
+                        makeDomainSession = options.makeDomainSession || defaultMakeDomainSession;
+                        return [2 /*return*/, makeDomainSession(actorName, api)];
+                    case "DomSession":
+                        return [2 /*return*/, new DomSession_1.default(actorName, options.makeRenderApp(api))];
+                    default:
+                        throw new Error("Unsupported Session: " + sessionType);
+                }
+                return [2 /*return*/];
+            });
+        });
+    }
     var World = /** @class */ (function () {
         function World() {
             this.actors = new Map();
@@ -57,7 +81,7 @@ function ibsen(options) {
         }
         World.prototype.getActor = function (actorName) {
             return __awaiter(this, void 0, void 0, function () {
-                var session, actor;
+                var api, makeSession, session, actor;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -66,14 +90,18 @@ function ibsen(options) {
                             if (!SESSION) {
                                 throw new Error("Please define the $SESSION environment variable");
                             }
-                            return [4 /*yield*/, this.makeSession(SESSION, actorName)];
+                            return [4 /*yield*/, this.makeApi(API)];
                         case 1:
+                            api = _a.sent();
+                            makeSession = options.makeSession || defaultMakeSession;
+                            return [4 /*yield*/, makeSession(SESSION, actorName, api)];
+                        case 2:
                             session = _a.sent();
                             if (!session) {
                                 throw new Error("No " + SESSION + " defined in " + this.constructor.name);
                             }
                             return [4 /*yield*/, session.start()];
-                        case 2:
+                        case 3:
                             _a.sent();
                             this.stoppables.push(session.stop.bind(session));
                             actor = new Actor_1.default(actorName, this.domainApi, session);
@@ -121,35 +149,14 @@ function ibsen(options) {
                 });
             });
         };
-        World.prototype.makeSession = function (sessionType, actorName) {
-            return __awaiter(this, void 0, void 0, function () {
-                var api;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, this.makeApi(API)];
-                        case 1:
-                            api = _a.sent();
-                            switch (sessionType) {
-                                case "DomainSession":
-                                    return [2 /*return*/, new DomainSession_1.default(actorName, api)];
-                                case "DomSession":
-                                    return [2 /*return*/, new DomSession_1.default(actorName, options.makeRenderApp(api))];
-                                default:
-                                    throw new Error("Unsupported Session: " + sessionType);
-                            }
-                            return [2 /*return*/];
-                    }
-                });
-            });
-        };
-        World.prototype.makeApi = function (chatApiType) {
+        World.prototype.makeApi = function (apiType) {
             return __awaiter(this, void 0, void 0, function () {
                 var _a, app, server_1, listen, addr, port, baseurl;
                 var _this = this;
                 return __generator(this, function (_b) {
                     switch (_b.label) {
                         case 0:
-                            _a = chatApiType;
+                            _a = apiType;
                             switch (_a) {
                                 case "Direct": return [3 /*break*/, 1];
                                 case "HTTP": return [3 /*break*/, 2];
@@ -180,7 +187,7 @@ function ibsen(options) {
                             port = addr.port;
                             baseurl = "http://localhost:" + port;
                             return [2 /*return*/, options.makeHttpApi(baseurl)];
-                        case 4: throw new Error("Unsupported ChatApi: " + chatApiType);
+                        case 4: throw new Error("Unsupported Api: " + apiType);
                     }
                 });
             });
