@@ -1,9 +1,9 @@
-import { IncomingMessage, ServerResponse } from "http"
+import http from "http"
 import ibsen from "../../src/ibsen"
 import { After, Before, setWorldConstructor } from "cucumber"
 import ChatApp from "../src/domain/ChatApp"
 import IChatApi from "../src/domain/IChatApi"
-import makeChatListener from "../src/server/makeChatListener"
+import makeChatExpressApp from "../src/server/makeChatExpressApp"
 import renderApp from "../src/client/renderApp"
 import ChatClient from "../src/client/ChatClient"
 import ChatSession from "../src/client/ChatSession"
@@ -23,8 +23,9 @@ ibsen<IChatApi, ChatSession>({
     return ($root: HTMLElement) => renderApp($root, api)
   },
 
-  makeRequestListener(api: IChatApi): (request: IncomingMessage, response: ServerResponse) => void {
-    return makeChatListener(api)
+  makeHttpServer(api: IChatApi): http.Server {
+    const expressApp = makeChatExpressApp(api)
+    return http.createServer(expressApp)
   },
 
   makeApiSession(actorName: string, api: IChatApi): ChatSession {

@@ -1,5 +1,5 @@
 import Actor from "./Actor"
-import http, { IncomingMessage, ServerResponse } from "http"
+import http from "http"
 import { promisify } from "util"
 import { AddressInfo } from "net"
 import { After, Before, setWorldConstructor } from "cucumber"
@@ -22,7 +22,9 @@ interface IbsenOptions<Api, Session> {
 
   makeHttpApi: (baseurl: string) => Api
 
-  makeRequestListener: (api: Api) => (request: IncomingMessage, response: ServerResponse) => void
+  // makeRequestListener: (api: Api) => (request: IncomingMessage, response: ServerResponse) => void
+
+  makeHttpServer: (api: Api) => http.Server
 }
 
 export default function ibsen<Api, Session>(options: IbsenOptions<Api, Session>) {
@@ -65,8 +67,9 @@ export default function ibsen<Api, Session>(options: IbsenOptions<Api, Session>)
           return this.domainApi
 
         case "HTTP":
-          const app = options.makeRequestListener(this.domainApi)
-          const server = http.createServer(app)
+          // const app = options.makeRequestListener(this.domainApi)
+          // const server = http.createServer(app)
+          const server = options.makeHttpServer(this.domainApi)
           const listen = promisify(server.listen.bind(server))
           await listen()
           this.stoppables.push(async () => {

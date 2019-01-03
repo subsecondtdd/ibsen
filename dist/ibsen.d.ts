@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import Actor from "./Actor";
-import { IncomingMessage, ServerResponse } from "http";
+import http from "http";
 import { Interaction } from "./types";
 export { Actor, Interaction };
 interface IbsenOptions<Api, Session> {
@@ -9,6 +9,6 @@ interface IbsenOptions<Api, Session> {
     makeRenderApp: (api: Api) => ($root: HTMLElement) => void;
     makeDomainApi: () => Api;
     makeHttpApi: (baseurl: string) => Api;
-    makeRequestListener: (api: Api) => (request: IncomingMessage, response: ServerResponse) => void;
+    makeHttpServer: (api: Api) => http.Server;
 }
 export default function ibsen<Api, Session>(options: IbsenOptions<Api, Session>): void;

@@ -40,7 +40,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Actor_1 = __importDefault(require("./Actor"));
 exports.Actor = Actor_1.default;
-var http_1 = __importDefault(require("http"));
 var util_1 = require("util");
 var cucumber_1 = require("cucumber");
 var SESSION = process.env.SESSION;
@@ -117,7 +116,7 @@ function ibsen(options) {
         };
         World.prototype.makeApi = function (apiType) {
             return __awaiter(this, void 0, void 0, function () {
-                var _a, app, server_1, listen, addr, port, baseurl;
+                var _a, server_1, listen, addr, port, baseurl;
                 var _this = this;
                 return __generator(this, function (_b) {
                     switch (_b.label) {
@@ -130,8 +129,7 @@ function ibsen(options) {
                             return [3 /*break*/, 4];
                         case 1: return [2 /*return*/, this.domainApi];
                         case 2:
-                            app = options.makeRequestListener(this.domainApi);
-                            server_1 = http_1.default.createServer(app);
+                            server_1 = options.makeHttpServer(this.domainApi);
                             listen = util_1.promisify(server_1.listen.bind(server_1));
                             return [4 /*yield*/, listen()];
                         case 3:
