@@ -126,13 +126,14 @@ function ibsen(options) {
                                 case "Direct": return [3 /*break*/, 1];
                                 case "HTTP": return [3 /*break*/, 2];
                             }
-                            return [3 /*break*/, 4];
+                            return [3 /*break*/, 5];
                         case 1: return [2 /*return*/, this.domainApi];
-                        case 2:
-                            server_1 = options.makeHttpServer(this.domainApi);
+                        case 2: return [4 /*yield*/, options.makeHttpServer(this.domainApi)];
+                        case 3:
+                            server_1 = _b.sent();
                             listen = util_1.promisify(server_1.listen.bind(server_1));
                             return [4 /*yield*/, listen()];
-                        case 3:
+                        case 4:
                             _b.sent();
                             this.stoppables.push(function () { return __awaiter(_this, void 0, void 0, function () {
                                 var close;
@@ -151,7 +152,7 @@ function ibsen(options) {
                             port = addr.port;
                             baseurl = "http://localhost:" + port;
                             return [2 /*return*/, options.makeHttpApi(baseurl)];
-                        case 4: throw new Error("Unsupported Api: " + apiType);
+                        case 5: throw new Error("Unsupported Api: " + apiType);
                     }
                 });
             });

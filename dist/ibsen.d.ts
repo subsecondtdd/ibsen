@@ -9,6 +9,6 @@ interface IbsenOptions<Api, Session> {
     makeRenderApp: (api: Api) => ($root: HTMLElement) => void;
     makeDomainApi: () => Api;
     makeHttpApi: (baseurl: string) => Api;
-    makeHttpServer: (api: Api) => http.Server;
+    makeHttpServer: (api: Api) => Promise<http.Server>;
 }
 export default function ibsen<Api, Session>(options: IbsenOptions<Api, Session>): void;
