@@ -22,7 +22,7 @@ interface IbsenOptions<Api, Session> {
 
   makeHttpApi: (baseurl: string) => Api
 
-  makeHttpServer: (api: Api) => http.Server
+  makeHttpServer: (api: Api) => Promise<http.Server>
 }
 
 export default function ibsen<Api, Session>(options: IbsenOptions<Api, Session>) {
@@ -67,7 +67,7 @@ export default function ibsen<Api, Session>(options: IbsenOptions<Api, Session>)
         case "HTTP":
           // const app = options.makeRequestListener(this.domainApi)
           // const server = http.createServer(app)
-          const server = options.makeHttpServer(this.domainApi)
+          const server = await options.makeHttpServer(this.domainApi)
           const listen = promisify(server.listen.bind(server))
           await listen()
           this.stoppables.push(async () => {

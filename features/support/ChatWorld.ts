@@ -23,7 +23,7 @@ ibsen<IChatApi, ChatSession>({
     return ($root: HTMLElement) => renderApp($root, api)
   },
 
-  makeHttpServer(api: IChatApi): http.Server {
+  async makeHttpServer(api: IChatApi): Promise<http.Server> {
     const expressApp = makeChatExpressApp(api)
     return http.createServer(expressApp)
   },
