@@ -22,8 +22,6 @@ interface IbsenOptions<Api, Session> {
 
   makeHttpApi: (baseurl: string) => Api
 
-  // makeRequestListener: (api: Api) => (request: IncomingMessage, response: ServerResponse) => void
-
   makeHttpServer: (api: Api) => http.Server
 }
 
