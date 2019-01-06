@@ -75,11 +75,21 @@ var Actor = /** @class */ (function () {
      * Use this in When steps to set up a context
      *
      * @param interaction a function that interacts with the system via a Session
+     * @param rememberKey an optional key to remember the result of the interaction
      */
-    Actor.prototype.attemptsTo = function (interaction) {
+    Actor.prototype.attemptsTo = function (interaction, rememberKey) {
         return __awaiter(this, void 0, void 0, function () {
+            var value;
             return __generator(this, function (_a) {
-                return [2 /*return*/, interaction(this.session)];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, interaction(this.session)];
+                    case 1:
+                        value = _a.sent();
+                        if (rememberKey !== undefined) {
+                            this.remember(rememberKey, value);
+                        }
+                        return [2 /*return*/];
+                }
             });
         });
     };
