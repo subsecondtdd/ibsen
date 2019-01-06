@@ -69,7 +69,7 @@ var Actor = /** @class */ (function () {
         if (!this.memory.has(key)) {
             throw new Error(this.name + " does not recall anything about " + key);
         }
-        this.memory.get(key);
+        return this.memory.get(key);
     };
     /**
      * Use this in When steps to set up a context

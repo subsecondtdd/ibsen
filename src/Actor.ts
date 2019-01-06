@@ -37,11 +37,11 @@ export default class Actor<Api = {}, Session = {}> {
    * @return the value that was recalled
    * @throws Error if nothing can be recalled.
    */
-  public recall(key: any) {
+  public recall<T>(key: any): T {
     if (!this.memory.has(key)) {
       throw new Error(`${this.name} does not recall anything about ${key}`)
     }
-    this.memory.get(key)
+    return this.memory.get(key)
   }
 
   /**

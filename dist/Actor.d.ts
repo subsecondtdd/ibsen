@@ -24,7 +24,7 @@ export default class Actor<Api = {}, Session = {}> {
      * @return the value that was recalled
      * @throws Error if nothing can be recalled.
      */
-    recall(key: any): void;
+    recall<T>(key: any): T;
     /**
      * Use this in When steps to set up a context
      *
