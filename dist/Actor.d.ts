@@ -31,7 +31,7 @@ export default class Actor<Api = {}, Session = {}> {
      * @param interaction a function that interacts with the system via a Session
      * @param rememberKey an optional key to remember the result of the interaction
      */
-    attemptsTo(interaction: Interaction<Session, void>, rememberKey?: any): Promise<void>;
+    attemptsTo<Result>(interaction: Interaction<Session, Result>, rememberKey?: any): Promise<void>;
     /**
      * Use this in Then steps to pull data out of the system (e.g. using a view)
      *

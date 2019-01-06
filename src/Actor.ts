@@ -50,7 +50,7 @@ export default class Actor<Api = {}, Session = {}> {
    * @param interaction a function that interacts with the system via a Session
    * @param rememberKey an optional key to remember the result of the interaction
    */
-  public async attemptsTo(interaction: Interaction<Session, void>, rememberKey?: any): Promise<void> {
+  public async attemptsTo<Result>(interaction: Interaction<Session, Result>, rememberKey?: any): Promise<void> {
     const value = await interaction(this.session)
     if (rememberKey !== undefined) {
       this.remember(rememberKey, value)
