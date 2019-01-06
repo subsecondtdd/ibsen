@@ -35,8 +35,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * An Actor is used to interact with the system in When and Then steps.
+ * (For Given steps, interact with the system using this.context).
+ */
 var Actor = /** @class */ (function () {
     function Actor(name, api, session) {
+        this.memory = new Map();
         this.name = name;
         this.api = api;
         this.session = session;
@@ -45,26 +50,31 @@ var Actor = /** @class */ (function () {
         return this.name;
     };
     /**
-     * Use this in Given steps to set up a context
+     * Remember something
      *
-     * @param context a function that sets up context
+     * @param key the name of the thing to remember
+     * @param value what to remember
      */
-    Actor.prototype.has = function (context) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, context(this.api, this.getName())];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/];
-                }
-            });
-        });
+    Actor.prototype.remember = function (key, value) {
+        this.memory.set(key, value);
+    };
+    /**
+     * Recall something previously remembered
+     *
+     * @param key the name of the thing to recall
+     * @return the value that was recalled
+     * @throws Error if nothing can be recalled.
+     */
+    Actor.prototype.recall = function (key) {
+        if (!this.memory.has(key)) {
+            throw new Error(this.name + " does not recall anything about " + key);
+        }
+        this.memory.get(key);
     };
     /**
      * Use this in When steps to set up a context
      *
-     * @param interaction a function that interacts with the system via a {@link ISession}
+     * @param interaction a function that interacts with the system via a Session
      */
     Actor.prototype.attemptsTo = function (interaction) {
         return __awaiter(this, void 0, void 0, function () {
@@ -76,7 +86,7 @@ var Actor = /** @class */ (function () {
     /**
      * Use this in Then steps to pull data out of the system (e.g. using a view)
      *
-     * @param interaction a function that interacts with the system via a {@link ISession}
+     * @param interaction a function that interacts with the system via a Session
      */
     Actor.prototype.check = function (interaction) {
         return __awaiter(this, void 0, void 0, function () {

@@ -1,12 +1,12 @@
 import assert from "assert"
 import { Given, Then, When } from "cucumber"
 import { Actor } from "../../src/ibsen"
-import { Said } from "../support/contexts"
+import { ActorHasSaid } from "../support/contexts"
 import { LookAtMessages, Say } from "../support/actions"
 import { Messages } from "../support/outcomes"
 
 Given("{actor} has said {string}", async function (actor: Actor, message: string) {
-  await actor.has(Said(message))
+  await this.context(ActorHasSaid(actor.getName(), message))
 })
 
 When("{actor} looks at the messages", async function (actor: Actor) {

@@ -3,7 +3,7 @@ import http from "http"
 import { promisify } from "util"
 import { AddressInfo } from "net"
 import { After, Before, setWorldConstructor } from "cucumber"
-import { Interaction } from "./types"
+import { Context, Interaction } from "./types"
 
 const SESSION = process.env.SESSION
 const API = process.env.API
@@ -29,7 +29,11 @@ export default function ibsen<Api, Session>(options: IbsenOptions<Api, Session>)
   class World {
     private domainApi: Api
     private readonly actors = new Map<string, Actor<Api, Session>>()
-    protected readonly stoppables: Array<() => void> = []
+    private readonly stoppables: Array<() => void> = []
+
+    async context(context: Context<Api>) {
+      await context(this.domainApi)
+    }
 
     async getActor(actorName: string): Promise<Actor<Api, Session>> {
       if (this.actors.has(actorName)) return this.actors.get(actorName)
@@ -65,8 +69,6 @@ export default function ibsen<Api, Session>(options: IbsenOptions<Api, Session>)
           return this.domainApi
 
         case "HTTP":
-          // const app = options.makeRequestListener(this.domainApi)
-          // const server = http.createServer(app)
           const server = await options.makeHttpServer(this.domainApi)
           const listen = promisify(server.listen.bind(server))
           await listen()

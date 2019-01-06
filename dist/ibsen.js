@@ -51,6 +51,18 @@ function ibsen(options) {
             this.actors = new Map();
             this.stoppables = [];
         }
+        World.prototype.context = function (context) {
+            return __awaiter(this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, context(this.domainApi)];
+                        case 1:
+                            _a.sent();
+                            return [2 /*return*/];
+                    }
+                });
+            });
+        };
         World.prototype.getActor = function (actorName) {
             return __awaiter(this, void 0, void 0, function () {
                 var api, session, actor;

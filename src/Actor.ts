@@ -1,9 +1,14 @@
-import { Context, Interaction } from "./types"
+import { Interaction } from "./types"
 
+/**
+ * An Actor is used to interact with the system in When and Then steps.
+ * (For Given steps, interact with the system using this.context).
+ */
 export default class Actor<Api = {}, Session = {}> {
   private readonly name: string
   private readonly api: Api
   private readonly session: Session
+  private readonly memory = new Map<any, any>()
 
   constructor(name: string, api: Api, session: Session) {
     this.name = name
@@ -16,18 +21,33 @@ export default class Actor<Api = {}, Session = {}> {
   }
 
   /**
-   * Use this in Given steps to set up a context
+   * Remember something
    *
-   * @param context a function that sets up context
+   * @param key the name of the thing to remember
+   * @param value what to remember
    */
-  public async has(context: Context<Api>): Promise<void> {
-    await context(this.api, this.getName())
+  public remember(key: any, value: any) {
+    this.memory.set(key, value)
+  }
+
+  /**
+   * Recall something previously remembered
+   *
+   * @param key the name of the thing to recall
+   * @return the value that was recalled
+   * @throws Error if nothing can be recalled.
+   */
+  public recall(key: any) {
+    if (!this.memory.has(key)) {
+      throw new Error(`${this.name} does not recall anything about ${key}`)
+    }
+    this.memory.get(key)
   }
 
   /**
    * Use this in When steps to set up a context
    *
-   * @param interaction a function that interacts with the system via a {@link ISession}
+   * @param interaction a function that interacts with the system via a Session
    */
   public async attemptsTo(interaction: Interaction<Session, void>): Promise<void> {
     return interaction(this.session)
@@ -36,7 +56,7 @@ export default class Actor<Api = {}, Session = {}> {
   /**
    * Use this in Then steps to pull data out of the system (e.g. using a view)
    *
-   * @param interaction a function that interacts with the system via a {@link ISession}
+   * @param interaction a function that interacts with the system via a Session
    */
   public async check<Result>(interaction: Interaction<Session, Result>): Promise<Result> {
     return interaction(this.session)
