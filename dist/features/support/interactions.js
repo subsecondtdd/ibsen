@@ -35,60 +35,32 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * An Actor is used to interact with the system in When and Then steps.
- * (For Given steps, interact with the system using this.context).
- */
-var Actor = /** @class */ (function () {
-    function Actor(name, world) {
-        this.name = name;
-        this.world = world;
-    }
-    Actor.prototype.getName = function () {
-        return this.name;
-    };
-    /**
-     * Use this in When steps to set up a context
-     *
-     * @param action a function that interacts with the system via a Session
-     * @param sessionFactory a factory for creating a session
-     */
-    Actor.prototype.attemptsTo = function (action, sessionFactory) {
-        return __awaiter(this, void 0, void 0, function () {
-            var nextSession;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, action(this.getSession(sessionFactory))];
-                    case 1:
-                        nextSession = _a.sent();
-                        if (nextSession) {
-                            this.session = nextSession;
-                        }
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    /**
-     * Use this in Then steps to pull data out of the system (e.g. using a view)
-     *
-     * @param outcome a function that interacts with the system via a Session
-     */
-    Actor.prototype.check = function (outcome) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, outcome(this.getSession(this.sessionFactory))];
-            });
-        });
-    };
-    Actor.prototype.getSession = function (sessionFactory) {
-        if (sessionFactory !== this.sessionFactory) {
-            this.session = this.world.makeSession(this.getName(), sessionFactory);
-            this.sessionFactory = sessionFactory;
-        }
-        return this.session;
-    };
-    return Actor;
-}());
-exports.default = Actor;
-//# sourceMappingURL=Actor.js.map
+//// Contexts ////
+function ActorHasSaid(actorName, message) {
+    return function (chatApp) { return chatApp.say(actorName, message); };
+}
+exports.ActorHasSaid = ActorHasSaid;
+//// Actions ////
+function LookAtMessages() {
+    var _this = this;
+    return function (session) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+        return [2 /*return*/, session.lookAtMessages()];
+    }); }); };
+}
+exports.LookAtMessages = LookAtMessages;
+function Say(message) {
+    var _this = this;
+    return function (session) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+        return [2 /*return*/, session.say(message)];
+    }); }); };
+}
+exports.Say = Say;
+//// Outcomes ////
+function Messages() {
+    var _this = this;
+    return function (session) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+        return [2 /*return*/, session.getMessages()];
+    }); }); };
+}
+exports.Messages = Messages;
+//# sourceMappingURL=interactions.js.map

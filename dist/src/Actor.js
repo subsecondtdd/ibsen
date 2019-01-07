@@ -41,7 +41,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 var Actor = /** @class */ (function () {
     function Actor(name, world) {
-        this.memory = new Map();
         this.name = name;
         this.world = world;
     }
@@ -49,44 +48,21 @@ var Actor = /** @class */ (function () {
         return this.name;
     };
     /**
-     * Remember something
-     *
-     * @param key the name of the thing to remember
-     * @param value what to remember
-     */
-    Actor.prototype.remember = function (key, value) {
-        this.memory.set(key, value);
-    };
-    /**
-     * Recall something previously remembered
-     *
-     * @param key the name of the thing to recall
-     * @return the value that was recalled
-     * @throws Error if nothing can be recalled.
-     */
-    Actor.prototype.recall = function (key) {
-        if (!this.memory.has(key)) {
-            throw new Error(this.name + " does not recall anything about " + key);
-        }
-        return this.memory.get(key);
-    };
-    /**
      * Use this in When steps to set up a context
      *
-     * @param interaction a function that interacts with the system via a Session
+     * @param action a function that interacts with the system via a Session
      * @param sessionFactory a factory for creating a session
-     * @param rememberKey an optional key to remember the result of the interaction
      */
-    Actor.prototype.attemptsTo = function (interaction, sessionFactory, rememberKey) {
+    Actor.prototype.attemptsTo = function (action, sessionFactory) {
         return __awaiter(this, void 0, void 0, function () {
-            var value;
+            var nextSession;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, interaction(this.getSession(sessionFactory))];
+                    case 0: return [4 /*yield*/, action(this.getSession(sessionFactory))];
                     case 1:
-                        value = _a.sent();
-                        if (rememberKey !== undefined) {
-                            this.remember(rememberKey, value);
+                        nextSession = _a.sent();
+                        if (nextSession) {
+                            this.session = nextSession;
                         }
                         return [2 /*return*/];
                 }
@@ -96,12 +72,12 @@ var Actor = /** @class */ (function () {
     /**
      * Use this in Then steps to pull data out of the system (e.g. using a view)
      *
-     * @param interaction a function that interacts with the system via a Session
+     * @param outcome a function that interacts with the system via a Session
      */
-    Actor.prototype.check = function (interaction) {
+    Actor.prototype.check = function (outcome) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, interaction(this.session)];
+                return [2 /*return*/, outcome(this.getSession(this.sessionFactory))];
             });
         });
     };

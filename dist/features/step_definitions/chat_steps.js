@@ -40,15 +40,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var assert_1 = __importDefault(require("assert"));
 var cucumber_1 = require("cucumber");
-var contexts_1 = require("../support/contexts");
-var actions_1 = require("../support/actions");
-var outcomes_1 = require("../support/outcomes");
+var interactions_1 = require("../support/interactions");
 var SessionFactories_1 = require("../support/SessionFactories");
 cucumber_1.Given("{actor} has said {string}", function (actor, message) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, this.context(contexts_1.ActorHasSaid(actor.getName(), message))];
+                case 0: return [4 /*yield*/, this.context(interactions_1.ActorHasSaid(actor.getName(), message))];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];
@@ -60,7 +58,7 @@ cucumber_1.When("{actor} looks at the messages", function (actor) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, actor.attemptsTo(actions_1.LookAtMessages(), SessionFactories_1.Home)];
+                case 0: return [4 /*yield*/, actor.attemptsTo(interactions_1.LookAtMessages(), SessionFactories_1.Home)];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];
@@ -72,7 +70,7 @@ cucumber_1.When("{actor} says {string}", function (actor, message) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, actor.attemptsTo(actions_1.Say(message), SessionFactories_1.Home)];
+                case 0: return [4 /*yield*/, actor.attemptsTo(interactions_1.Say(message), SessionFactories_1.Home)];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];
@@ -85,7 +83,7 @@ cucumber_1.Then("{actor} should see {string}", function (actor, message) {
         var messages;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, actor.check(outcomes_1.Messages())];
+                case 0: return [4 /*yield*/, actor.check(interactions_1.Messages())];
                 case 1:
                     messages = _a.sent();
                     assert_1.default(messages.indexOf(message) != -1, "No \"" + message + "\" in " + messages);

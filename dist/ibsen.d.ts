@@ -1,8 +1,8 @@
 /// <reference types="node" />
 import Actor from "./Actor";
 import http from "http";
-import { Context, Interaction, SessionFactory } from "./types";
-export { Actor, Context, Interaction, SessionFactory };
+import { Context, SessionFactory } from "./types";
+export { Actor, Context, SessionFactory };
 interface IbsenOptions<Api> {
     makeRenderApp: (session: any) => ($root: HTMLElement) => void;
     makeDomainApi: () => Api;

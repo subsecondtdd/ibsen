@@ -1,4 +1,4 @@
-import { Interaction, SessionFactory } from "./types"
+import { Action, Outcome, SessionFactory } from "./types"
 import { IbsenWorld } from "./ibsen"
 
 /**
@@ -9,7 +9,6 @@ export default class Actor<Api = {}> {
   private readonly name: string
   private readonly world: IbsenWorld<Api>
 
-  private readonly memory = new Map<any, any>()
   private sessionFactory: SessionFactory<Api, any>
   private session: any
 
@@ -23,50 +22,25 @@ export default class Actor<Api = {}> {
   }
 
   /**
-   * Remember something
-   *
-   * @param key the name of the thing to remember
-   * @param value what to remember
-   */
-  public remember(key: any, value: any) {
-    this.memory.set(key, value)
-  }
-
-  /**
-   * Recall something previously remembered
-   *
-   * @param key the name of the thing to recall
-   * @return the value that was recalled
-   * @throws Error if nothing can be recalled.
-   */
-  public recall<T>(key: any): T {
-    if (!this.memory.has(key)) {
-      throw new Error(`${this.name} does not recall anything about ${key}`)
-    }
-    return this.memory.get(key)
-  }
-
-  /**
    * Use this in When steps to set up a context
    *
-   * @param interaction a function that interacts with the system via a Session
+   * @param action a function that interacts with the system via a Session
    * @param sessionFactory a factory for creating a session
-   * @param rememberKey an optional key to remember the result of the interaction
    */
-  public async attemptsTo<Session, Result>(interaction: Interaction<Session, Result>, sessionFactory: SessionFactory<Api, Session>, rememberKey?: any): Promise<void> {
-    const value = await interaction(this.getSession(sessionFactory))
-    if (rememberKey !== undefined) {
-      this.remember(rememberKey, value)
+  public async attemptsTo<Session, NextSession>(action: Action<Session, NextSession>, sessionFactory: SessionFactory<Api, Session>): Promise<void> {
+    const nextSession = await action(this.getSession(sessionFactory))
+    if (nextSession) {
+      this.session = nextSession
     }
   }
 
   /**
    * Use this in Then steps to pull data out of the system (e.g. using a view)
    *
-   * @param interaction a function that interacts with the system via a Session
+   * @param outcome a function that interacts with the system via a Session
    */
-  public async check<Session, Result>(interaction: Interaction<Session, Result>): Promise<Result> {
-    return interaction(this.session)
+  public async check<Session, Result>(outcome: Outcome<Session, Result>): Promise<Result> {
+    return outcome(this.getSession(this.sessionFactory))
   }
 
   private getSession<Session>(sessionFactory: SessionFactory<Api, Session>): Session {

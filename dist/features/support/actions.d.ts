@@ -1,3 +1,4 @@
 import ChatSession from "../src/client/ChatSession";
-export declare function LookAtMessages(): (session: ChatSession) => Promise<void>;
-export declare function Say(message: string): (session: ChatSession) => Promise<void>;
+import { Action } from "../../src/types";
+export declare function LookAtMessages(): Action<ChatSession>;
+export declare function Say(message: string): Action<ChatSession>;
