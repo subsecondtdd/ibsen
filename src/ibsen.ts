@@ -9,7 +9,7 @@ const SESSION = process.env.SESSION
 const API = process.env.API
 const KEEP_DOM = !!process.env.KEEP_DOM
 
-export { Actor, Interaction }
+export { Actor, Context, Interaction, SessionFactory }
 
 interface IbsenOptions<Api> {
   makeRenderApp: (session: any) => ($root: HTMLElement) => void
