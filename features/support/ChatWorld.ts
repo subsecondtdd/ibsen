@@ -7,10 +7,8 @@ import makeChatExpressApp from "../src/server/makeChatExpressApp"
 import renderApp from "../src/client/renderApp"
 import ChatClient from "../src/client/ChatClient"
 import ChatSession from "../src/client/ChatSession"
-import ApiChatSession from "../src/client/ApiChatSession"
-import DomChatSession from "./DomChatSession"
 
-ibsen<IChatApi, ChatSession>({
+ibsen<IChatApi>({
   makeDomainApi(): IChatApi {
     return new ChatApp()
   },
@@ -19,21 +17,13 @@ ibsen<IChatApi, ChatSession>({
     return new ChatClient(baseurl)
   },
 
-  makeRenderApp(api: IChatApi): ($root: HTMLElement) => void {
-    return ($root: HTMLElement) => renderApp($root, api)
+  makeRenderApp(session: ChatSession): ($root: HTMLElement) => void {
+    return ($root: HTMLElement) => renderApp($root, session)
   },
 
   async makeHttpServer(api: IChatApi): Promise<http.Server> {
     const expressApp = makeChatExpressApp(api)
     return http.createServer(expressApp)
   },
-
-  makeApiSession(actorName: string, api: IChatApi): ChatSession {
-    return new ApiChatSession(actorName, api)
-  },
-
-  makeDomSession(actorName: string, $root: HTMLElement): ChatSession {
-    return new DomChatSession(actorName, $root)
-  }
 })
 

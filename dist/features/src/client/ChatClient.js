@@ -34,85 +34,56 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * An Actor is used to interact with the system in When and Then steps.
- * (For Given steps, interact with the system using this.context).
- */
-var Actor = /** @class */ (function () {
-    function Actor(name, world) {
-        this.memory = new Map();
-        this.name = name;
-        this.world = world;
+var node_fetch_1 = __importDefault(require("node-fetch"));
+var ChatClient = /** @class */ (function () {
+    function ChatClient(baseurl) {
+        this.baseurl = baseurl;
     }
-    Actor.prototype.getName = function () {
-        return this.name;
-    };
-    /**
-     * Remember something
-     *
-     * @param key the name of the thing to remember
-     * @param value what to remember
-     */
-    Actor.prototype.remember = function (key, value) {
-        this.memory.set(key, value);
-    };
-    /**
-     * Recall something previously remembered
-     *
-     * @param key the name of the thing to recall
-     * @return the value that was recalled
-     * @throws Error if nothing can be recalled.
-     */
-    Actor.prototype.recall = function (key) {
-        if (!this.memory.has(key)) {
-            throw new Error(this.name + " does not recall anything about " + key);
-        }
-        return this.memory.get(key);
-    };
-    /**
-     * Use this in When steps to set up a context
-     *
-     * @param interaction a function that interacts with the system via a Session
-     * @param sessionFactory a factory for creating a session
-     * @param rememberKey an optional key to remember the result of the interaction
-     */
-    Actor.prototype.attemptsTo = function (interaction, sessionFactory, rememberKey) {
+    ChatClient.prototype.say = function (actorName, message) {
         return __awaiter(this, void 0, void 0, function () {
-            var value;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, interaction(this.getSession(sessionFactory))];
+            var res, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, node_fetch_1.default(this.baseurl + "/messages", {
+                            method: "POST",
+                            body: JSON.stringify({
+                                actorName: actorName,
+                                message: message
+                            }),
+                            headers: {
+                                "Content-Type": "application/json"
+                            }
+                        })];
                     case 1:
-                        value = _a.sent();
-                        if (rememberKey !== undefined) {
-                            this.remember(rememberKey, value);
-                        }
-                        return [2 /*return*/];
+                        res = _b.sent();
+                        if (!!res.ok) return [3 /*break*/, 3];
+                        _a = Error.bind;
+                        return [4 /*yield*/, res.text()];
+                    case 2: throw new (_a.apply(Error, [void 0, _b.sent()]))();
+                    case 3: return [2 /*return*/];
                 }
             });
         });
     };
-    /**
-     * Use this in Then steps to pull data out of the system (e.g. using a view)
-     *
-     * @param interaction a function that interacts with the system via a Session
-     */
-    Actor.prototype.check = function (interaction) {
+    ChatClient.prototype.getMessages = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var res;
             return __generator(this, function (_a) {
-                return [2 /*return*/, interaction(this.session)];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, node_fetch_1.default(this.baseurl + "/messages")];
+                    case 1:
+                        res = _a.sent();
+                        return [4 /*yield*/, res.json()];
+                    case 2: return [2 /*return*/, _a.sent()];
+                }
             });
         });
     };
-    Actor.prototype.getSession = function (sessionFactory) {
-        if (sessionFactory !== this.sessionFactory) {
-            this.session = this.world.makeSession(this.getName(), sessionFactory);
-            this.sessionFactory = sessionFactory;
-        }
-        return this.session;
-    };
-    return Actor;
+    return ChatClient;
 }());
-exports.default = Actor;
-//# sourceMappingURL=Actor.js.map
+exports.default = ChatClient;
+//# sourceMappingURL=ChatClient.js.map

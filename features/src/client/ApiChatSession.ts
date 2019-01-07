@@ -9,6 +9,7 @@ export default class ApiChatSession implements ChatSession {
     await this.api.say(this.actorName, message)
   }
 
+  // TODO: Cache/poll messages?
   async getMessages(): Promise<string[]> {
     return this.api.getMessages()
   }

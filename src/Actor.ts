@@ -1,19 +1,21 @@
-import { Interaction } from "./types"
+import { Interaction, SessionFactory } from "./types"
+import { IbsenWorld } from "./ibsen"
 
 /**
  * An Actor is used to interact with the system in When and Then steps.
  * (For Given steps, interact with the system using this.context).
  */
-export default class Actor<Api = {}, Session = {}> {
+export default class Actor<Api = {}> {
   private readonly name: string
-  private readonly api: Api
-  private readonly session: Session
-  private readonly memory = new Map<any, any>()
+  private readonly world: IbsenWorld<Api>
 
-  constructor(name: string, api: Api, session: Session) {
+  private readonly memory = new Map<any, any>()
+  private sessionFactory: SessionFactory<Api, any>
+  private session: any
+
+  constructor(name: string, world: IbsenWorld<Api>) {
     this.name = name
-    this.api = api
-    this.session = session
+    this.world = world
   }
 
   public getName(): string {
@@ -48,10 +50,11 @@ export default class Actor<Api = {}, Session = {}> {
    * Use this in When steps to set up a context
    *
    * @param interaction a function that interacts with the system via a Session
+   * @param sessionFactory a factory for creating a session
    * @param rememberKey an optional key to remember the result of the interaction
    */
-  public async attemptsTo<Result>(interaction: Interaction<Session, Result>, rememberKey?: any): Promise<void> {
-    const value = await interaction(this.session)
+  public async attemptsTo<Session, Result>(interaction: Interaction<Session, Result>, sessionFactory: SessionFactory<Api, Session>, rememberKey?: any): Promise<void> {
+    const value = await interaction(this.getSession(sessionFactory))
     if (rememberKey !== undefined) {
       this.remember(rememberKey, value)
     }
@@ -62,7 +65,15 @@ export default class Actor<Api = {}, Session = {}> {
    *
    * @param interaction a function that interacts with the system via a Session
    */
-  public async check<Result>(interaction: Interaction<Session, Result>): Promise<Result> {
+  public async check<Session, Result>(interaction: Interaction<Session, Result>): Promise<Result> {
     return interaction(this.session)
+  }
+
+  private getSession<Session>(sessionFactory: SessionFactory<Api, Session>): Session {
+    if (sessionFactory !== this.sessionFactory) {
+      this.session = this.world.makeSession(this.getName(), sessionFactory)
+      this.sessionFactory = sessionFactory
+    }
+    return this.session
   }
 }

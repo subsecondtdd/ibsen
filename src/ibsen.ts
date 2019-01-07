@@ -3,7 +3,7 @@ import http from "http"
 import { promisify } from "util"
 import { AddressInfo } from "net"
 import { After, Before, setWorldConstructor } from "cucumber"
-import { Context, Interaction } from "./types"
+import { Context, Interaction, SessionFactory } from "./types"
 
 const SESSION = process.env.SESSION
 const API = process.env.API
@@ -11,12 +11,8 @@ const KEEP_DOM = !!process.env.KEEP_DOM
 
 export { Actor, Interaction }
 
-interface IbsenOptions<Api, Session> {
-  makeApiSession: (actorName: string, api: Api) => Session
-
-  makeDomSession: (actorName: string, $root: HTMLElement) => Session
-
-  makeRenderApp: (api: Api) => ($root: HTMLElement) => void
+interface IbsenOptions<Api> {
+  makeRenderApp: (session: any) => ($root: HTMLElement) => void
 
   makeDomainApi: () => Api
 
@@ -25,36 +21,44 @@ interface IbsenOptions<Api, Session> {
   makeHttpServer: (api: Api) => Promise<http.Server>
 }
 
-export default function ibsen<Api, Session>(options: IbsenOptions<Api, Session>) {
-  class World {
-    private domainApi: Api
-    private readonly actors = new Map<string, Actor<Api, Session>>()
+export interface IbsenWorld<Api> {
+  makeSession<Session>(actorName: string, sessionFactory: SessionFactory<Api, Session>): Session
+}
+
+export default function ibsen<Api>(options: IbsenOptions<Api>) {
+  class World implements IbsenWorld<Api> {
+    private readonly actors = new Map<string, Actor<Api>>()
     private readonly stoppables: Array<() => void> = []
+    private domainApi: Api
+    private baseurl: string
 
     async context(context: Context<Api>) {
       await context(this.domainApi)
     }
 
-    async getActor(actorName: string): Promise<Actor<Api, Session>> {
+    async getActor(actorName: string): Promise<Actor<Api>> {
       if (this.actors.has(actorName)) return this.actors.get(actorName)
 
-      if (!SESSION) {
-        throw new Error(`Please define the $SESSION environment variable`)
-      }
-
-      const api = await this.makeApi(API)
-      const session = this.makeSession(SESSION, actorName, api)
-      if (!session) {
-        throw new Error(`No ${SESSION} defined in ${this.constructor.name}`)
-      }
-
-      const actor = new Actor(actorName, this.domainApi, session)
+      const actor = new Actor(actorName, this)
       this.actors.set(actorName, actor)
       return actor
     }
 
     async start() {
       this.domainApi = await options.makeDomainApi()
+
+      if (API === "HTTP") {
+        const server = await options.makeHttpServer(this.domainApi)
+        const listen = promisify(server.listen.bind(server))
+        await listen()
+        this.stoppables.push(async () => {
+          const close = promisify(server.close.bind(server))
+          await close()
+        })
+        const addr = server.address() as AddressInfo
+        const port = addr.port
+        this.baseurl = `http://localhost:${port}`
+      }
     }
 
     async stop() {
@@ -63,42 +67,35 @@ export default function ibsen<Api, Session>(options: IbsenOptions<Api, Session>)
       }
     }
 
-    protected async makeApi(apiType: string): Promise<Api> {
-      switch (apiType) {
+    protected makeSessionApi(): Api {
+      switch (API) {
         case "Direct":
           return this.domainApi
 
         case "HTTP":
-          const server = await options.makeHttpServer(this.domainApi)
-          const listen = promisify(server.listen.bind(server))
-          await listen()
-          this.stoppables.push(async () => {
-            const close = promisify(server.close.bind(server))
-            await close()
-          })
-          const addr = server.address() as AddressInfo
-          const port = addr.port
-          const baseurl = `http://localhost:${port}`
-          return options.makeHttpApi(baseurl)
+          return options.makeHttpApi(this.baseurl)
 
         default:
-          throw new Error(`Unsupported Api: ${apiType}`)
+          throw new Error(`Unsupported Api: ${API}`)
       }
     }
 
-    private makeSession(sessionType: string, actorName: string, api: Api): Session {
-      switch (sessionType) {
+    public makeSession<Session>(actorName: string, sessionFactory: SessionFactory<Api, Session>): Session {
+      const apiSession = sessionFactory.ApiSession(actorName, this.makeSessionApi())
+
+      switch (SESSION) {
         case "ApiSession":
-          return options.makeApiSession(actorName, api)
+          return apiSession
 
         case "DomSession":
           const $actor = this.makeActorNode(actorName)
-          const renderApp = options.makeRenderApp(api)
+          const session = sessionFactory.DomSession(actorName, $actor)
+          const renderApp = options.makeRenderApp(apiSession)
           renderApp($actor)
-          return options.makeDomSession(actorName, $actor)
+          return session
 
         default:
-          throw new Error(`Unsupported Session: ${sessionType}`)
+          throw new Error(`Unsupported Session: ${SESSION}`)
       }
     }
 

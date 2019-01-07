@@ -34,85 +34,44 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * An Actor is used to interact with the system in When and Then steps.
- * (For Given steps, interact with the system using this.context).
- */
-var Actor = /** @class */ (function () {
-    function Actor(name, world) {
-        this.memory = new Map();
-        this.name = name;
-        this.world = world;
+var dom_testing_library_1 = require("dom-testing-library");
+// @ts-ignore
+var react_trigger_change_1 = __importDefault(require("react-trigger-change"));
+var getMicrodata_1 = __importDefault(require("../../src/getMicrodata"));
+var DomChatSession = /** @class */ (function () {
+    function DomChatSession(actorName, $root) {
+        this.actorName = actorName;
+        this.$root = $root;
     }
-    Actor.prototype.getName = function () {
-        return this.name;
+    DomChatSession.prototype.say = function (message) {
+        var $message = this.$root.querySelector("input");
+        $message.value = message;
+        react_trigger_change_1.default($message);
+        var $form = this.$root.querySelector("form");
+        dom_testing_library_1.fireEvent.submit($form);
     };
-    /**
-     * Remember something
-     *
-     * @param key the name of the thing to remember
-     * @param value what to remember
-     */
-    Actor.prototype.remember = function (key, value) {
-        this.memory.set(key, value);
+    DomChatSession.prototype.getMessages = function () {
+        var microdata = getMicrodata_1.default(this.$root);
+        return microdata.messages.map(function (m) { return m.value; });
     };
-    /**
-     * Recall something previously remembered
-     *
-     * @param key the name of the thing to recall
-     * @return the value that was recalled
-     * @throws Error if nothing can be recalled.
-     */
-    Actor.prototype.recall = function (key) {
-        if (!this.memory.has(key)) {
-            throw new Error(this.name + " does not recall anything about " + key);
-        }
-        return this.memory.get(key);
-    };
-    /**
-     * Use this in When steps to set up a context
-     *
-     * @param interaction a function that interacts with the system via a Session
-     * @param sessionFactory a factory for creating a session
-     * @param rememberKey an optional key to remember the result of the interaction
-     */
-    Actor.prototype.attemptsTo = function (interaction, sessionFactory, rememberKey) {
+    DomChatSession.prototype.lookAtMessages = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var value;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, interaction(this.getSession(sessionFactory))];
+                    case 0: return [4 /*yield*/, dom_testing_library_1.waitForElement(function () { return _this.$root.querySelector("li"); }, ({ container: this.$root }))];
                     case 1:
-                        value = _a.sent();
-                        if (rememberKey !== undefined) {
-                            this.remember(rememberKey, value);
-                        }
+                        _a.sent();
                         return [2 /*return*/];
                 }
             });
         });
     };
-    /**
-     * Use this in Then steps to pull data out of the system (e.g. using a view)
-     *
-     * @param interaction a function that interacts with the system via a Session
-     */
-    Actor.prototype.check = function (interaction) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, interaction(this.session)];
-            });
-        });
-    };
-    Actor.prototype.getSession = function (sessionFactory) {
-        if (sessionFactory !== this.sessionFactory) {
-            this.session = this.world.makeSession(this.getName(), sessionFactory);
-            this.sessionFactory = sessionFactory;
-        }
-        return this.session;
-    };
-    return Actor;
+    return DomChatSession;
 }());
-exports.default = Actor;
-//# sourceMappingURL=Actor.js.map
+exports.default = DomChatSession;
+//# sourceMappingURL=DomChatSession.js.map

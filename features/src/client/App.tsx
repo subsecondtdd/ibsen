@@ -1,8 +1,8 @@
 import React, { ReactNode, useState } from "react"
-import IChatApi from "../domain/IChatApi"
+import ChatSession from "./ChatSession"
 
 interface IAppProps {
-  chatApi: IChatApi
+  chatSession: ChatSession
 }
 
 interface IState {
@@ -20,14 +20,14 @@ class App extends React.Component<IAppProps, IState> {
 
   render(): ReactNode {
     return <div itemScope={true}>
-      <MessageForm chatApi={this.props.chatApi}/>
+      <MessageForm chatSession={this.props.chatSession}/>
       <MessageList messages={this.state.messages}/>
     </div>
   }
 
   private async loadMessages() {
     try {
-      const messages = await this.props.chatApi.getMessages()
+      const messages = await this.props.chatSession.getMessages()
       this.setState({messages})
     } catch (e) {
       console.error(e)
@@ -35,17 +35,21 @@ class App extends React.Component<IAppProps, IState> {
   }
 }
 
-const MessageForm: React.FunctionComponent<IAppProps> = ({chatApi}) => {
+const MessageForm: React.FunctionComponent<IAppProps> = ({chatSession}) => {
   const [value, setValue] = useState("")
 
   async function submitMessage(value: string) {
-    await chatApi.say("Sean", value)
+    await chatSession.say(value)
   }
 
-  return <form onSubmit={e => {
+  return <form onSubmit={async e => {
     e.preventDefault()
-    submitMessage(value)
-    setValue("")
+    try {
+      await submitMessage(value)
+      setValue("")
+    } catch (e) {
+      console.error(e)
+    }
   }}>
     <input value={value} onChange={e => setValue(e.target.value)}/>
   </form>

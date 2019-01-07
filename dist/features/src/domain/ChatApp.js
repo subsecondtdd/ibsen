@@ -35,84 +35,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * An Actor is used to interact with the system in When and Then steps.
- * (For Given steps, interact with the system using this.context).
- */
-var Actor = /** @class */ (function () {
-    function Actor(name, world) {
-        this.memory = new Map();
-        this.name = name;
-        this.world = world;
+var ChatApp = /** @class */ (function () {
+    function ChatApp() {
+        this.messages = [];
     }
-    Actor.prototype.getName = function () {
-        return this.name;
-    };
-    /**
-     * Remember something
-     *
-     * @param key the name of the thing to remember
-     * @param value what to remember
-     */
-    Actor.prototype.remember = function (key, value) {
-        this.memory.set(key, value);
-    };
-    /**
-     * Recall something previously remembered
-     *
-     * @param key the name of the thing to recall
-     * @return the value that was recalled
-     * @throws Error if nothing can be recalled.
-     */
-    Actor.prototype.recall = function (key) {
-        if (!this.memory.has(key)) {
-            throw new Error(this.name + " does not recall anything about " + key);
-        }
-        return this.memory.get(key);
-    };
-    /**
-     * Use this in When steps to set up a context
-     *
-     * @param interaction a function that interacts with the system via a Session
-     * @param sessionFactory a factory for creating a session
-     * @param rememberKey an optional key to remember the result of the interaction
-     */
-    Actor.prototype.attemptsTo = function (interaction, sessionFactory, rememberKey) {
+    ChatApp.prototype.say = function (actorName, message) {
         return __awaiter(this, void 0, void 0, function () {
-            var value;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, interaction(this.getSession(sessionFactory))];
-                    case 1:
-                        value = _a.sent();
-                        if (rememberKey !== undefined) {
-                            this.remember(rememberKey, value);
-                        }
-                        return [2 /*return*/];
-                }
+                this.messages.push(actorName + ": " + message);
+                return [2 /*return*/];
             });
         });
     };
-    /**
-     * Use this in Then steps to pull data out of the system (e.g. using a view)
-     *
-     * @param interaction a function that interacts with the system via a Session
-     */
-    Actor.prototype.check = function (interaction) {
+    ChatApp.prototype.getMessages = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, interaction(this.session)];
+                return [2 /*return*/, this.messages];
             });
         });
     };
-    Actor.prototype.getSession = function (sessionFactory) {
-        if (sessionFactory !== this.sessionFactory) {
-            this.session = this.world.makeSession(this.getName(), sessionFactory);
-            this.sessionFactory = sessionFactory;
-        }
-        return this.session;
-    };
-    return Actor;
+    return ChatApp;
 }());
-exports.default = Actor;
-//# sourceMappingURL=Actor.js.map
+exports.default = ChatApp;
+//# sourceMappingURL=ChatApp.js.map
