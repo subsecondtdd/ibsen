@@ -6,6 +6,7 @@ import { IbsenWorld } from "./ibsen"
  * (For Given steps, interact with the system using this.context).
  */
 export default class Actor<Api = {}> {
+  private readonly memory = new Map<any, any>()
   private readonly name: string
   private readonly world: IbsenWorld<Api>
 
@@ -19,6 +20,30 @@ export default class Actor<Api = {}> {
 
   public getName(): string {
     return this.name
+  }
+
+  /**
+   * Remember something
+   *
+   * @param key the name of the thing to remember
+   * @param value what to remember
+   */
+  public remember(key: any, value: any) {
+    this.memory.set(key, value)
+  }
+
+  /**
+   * Recall something previously remembered
+   *
+   * @param key the name of the thing to recall
+   * @return the value that was recalled
+   * @throws Error if nothing can be recalled.
+   */
+  public recall<T>(key: any): T {
+    if (!this.memory.has(key)) {
+      throw new Error(`${this.name} does not recall anything about ${key}`)
+    }
+    return this.memory.get(key)
   }
 
   /**
