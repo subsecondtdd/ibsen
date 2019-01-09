@@ -81,7 +81,8 @@ export default function ibsen<Api>(options: IbsenOptions<Api>) {
     }
 
     public makeSession<Session>(actorName: string, sessionFactory: SessionFactory<Api, Session>): Session {
-      const apiSession = sessionFactory.ApiSession(actorName, this.makeSessionApi())
+      const api = this.makeSessionApi()
+      const apiSession = sessionFactory.ApiSession(actorName, api)
 
       switch (SESSION) {
         case "ApiSession":
@@ -89,7 +90,7 @@ export default function ibsen<Api>(options: IbsenOptions<Api>) {
 
         case "DomSession":
           const $actor = this.makeActorNode(actorName)
-          const session = sessionFactory.DomSession(actorName, $actor)
+          const session = sessionFactory.DomSession(actorName, $actor, api)
           const renderApp = options.makeRenderApp(apiSession)
           renderApp($actor)
           return session

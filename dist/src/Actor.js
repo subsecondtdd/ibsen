@@ -41,11 +41,34 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 var Actor = /** @class */ (function () {
     function Actor(name, world) {
+        this.memory = new Map();
         this.name = name;
         this.world = world;
     }
     Actor.prototype.getName = function () {
         return this.name;
+    };
+    /**
+     * Remember something
+     *
+     * @param key the name of the thing to remember
+     * @param value what to remember
+     */
+    Actor.prototype.remember = function (key, value) {
+        this.memory.set(key, value);
+    };
+    /**
+     * Recall something previously remembered
+     *
+     * @param key the name of the thing to recall
+     * @return the value that was recalled
+     * @throws Error if nothing can be recalled.
+     */
+    Actor.prototype.recall = function (key) {
+        if (!this.memory.has(key)) {
+            throw new Error(this.name + " does not recall anything about " + key);
+        }
+        return this.memory.get(key);
     };
     /**
      * Use this in When steps to set up a context

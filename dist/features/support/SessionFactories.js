@@ -7,7 +7,7 @@ var ApiChatSession_1 = __importDefault(require("../src/client/ApiChatSession"));
 var DomChatSession_1 = __importDefault(require("./DomChatSession"));
 var Home = {
     ApiSession: function (actorName, api) { return new ApiChatSession_1.default(actorName, api); },
-    DomSession: function (actorName, $root) { return new DomChatSession_1.default(actorName, $root); }
+    DomSession: function (actorName, $root, api) { return new DomChatSession_1.default(actorName, $root); }
 };
 exports.Home = Home;
 //# sourceMappingURL=SessionFactories.js.map

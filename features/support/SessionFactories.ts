@@ -6,7 +6,7 @@ import DomChatSession from "./DomChatSession"
 
 const Home: SessionFactory<IChatApi, ChatSession> = {
   ApiSession: (actorName: string, api: IChatApi) => new ApiChatSession(actorName, api),
-  DomSession: (actorName: string, $root: HTMLElement) => new DomChatSession(actorName, $root)
+  DomSession: (actorName: string, $root: HTMLElement, api: IChatApi) => new DomChatSession(actorName, $root)
 }
 
 export { Home }

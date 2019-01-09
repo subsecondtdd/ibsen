@@ -5,12 +5,28 @@ import { IbsenWorld } from "./ibsen";
  * (For Given steps, interact with the system using this.context).
  */
 export default class Actor<Api = {}> {
+    private readonly memory;
     private readonly name;
     private readonly world;
     private sessionFactory;
     private session;
     constructor(name: string, world: IbsenWorld<Api>);
     getName(): string;
+    /**
+     * Remember something
+     *
+     * @param key the name of the thing to remember
+     * @param value what to remember
+     */
+    remember(key: any, value: any): void;
+    /**
+     * Recall something previously remembered
+     *
+     * @param key the name of the thing to recall
+     * @return the value that was recalled
+     * @throws Error if nothing can be recalled.
+     */
+    recall<T>(key: any): T;
     /**
      * Use this in When steps to set up a context
      *

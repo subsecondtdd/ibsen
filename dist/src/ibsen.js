@@ -150,13 +150,14 @@ function ibsen(options) {
             }
         };
         World.prototype.makeSession = function (actorName, sessionFactory) {
-            var apiSession = sessionFactory.ApiSession(actorName, this.makeSessionApi());
+            var api = this.makeSessionApi();
+            var apiSession = sessionFactory.ApiSession(actorName, api);
             switch (SESSION) {
                 case "ApiSession":
                     return apiSession;
                 case "DomSession":
                     var $actor = this.makeActorNode(actorName);
-                    var session = sessionFactory.DomSession(actorName, $actor);
+                    var session = sessionFactory.DomSession(actorName, $actor, api);
                     var renderApp = options.makeRenderApp(apiSession);
                     renderApp($actor);
                     return session;
