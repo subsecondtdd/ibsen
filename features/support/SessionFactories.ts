@@ -1,4 +1,4 @@
-import { SessionFactory } from "../../src/types"
+import { SessionFactory } from "../../src/ibsen"
 import IChatApi from "../src/domain/IChatApi"
 import ChatSession from "../src/client/ChatSession"
 import ApiChatSession from "../src/client/ApiChatSession"

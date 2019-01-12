@@ -1,5 +1,5 @@
 import ChatSession from "../src/client/ChatSession"
-import { Action, Context, Outcome } from "../../src/types"
+import { Action, Context, Outcome } from "../../src/ibsen"
 import ChatApp from "../src/domain/ChatApp"
 
 //// Contexts ////

@@ -3,13 +3,13 @@ import http from "http"
 import { promisify } from "util"
 import { AddressInfo } from "net"
 import { After, Before, setWorldConstructor } from "cucumber"
-import { Context, SessionFactory } from "./types"
+import { Action, Context, Outcome, SessionFactory } from "./types"
 
 const SESSION = process.env.SESSION
 const API = process.env.API
 const KEEP_DOM = !!process.env.KEEP_DOM
 
-export { Actor, Context, SessionFactory }
+export { Actor, Context, Action, Outcome, SessionFactory }
 
 interface IbsenOptions<Api> {
   makeRenderApp: (session: any) => ($root: HTMLElement) => void
