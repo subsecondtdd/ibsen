@@ -65,11 +65,13 @@ function ibsen(options) {
         };
         World.prototype.getActor = function (actorName) {
             return __awaiter(this, void 0, void 0, function () {
-                var actor;
+                var sessionFactory, initialSession, actor;
                 return __generator(this, function (_a) {
                     if (this.actors.has(actorName))
                         return [2 /*return*/, this.actors.get(actorName)];
-                    actor = new Actor_1.default(actorName, this);
+                    sessionFactory = options.initialSessionFactory();
+                    initialSession = this.makeSession(actorName, sessionFactory);
+                    actor = new Actor_1.default(actorName, initialSession);
                     this.actors.set(actorName, actor);
                     return [2 /*return*/, actor];
                 });
@@ -157,7 +159,7 @@ function ibsen(options) {
                     return apiSession;
                 case "DomSession":
                     var $actor = this.makeActorNode(actorName);
-                    var session = sessionFactory.DomSession(actorName, $actor, api);
+                    var session = sessionFactory.DomSession(actorName, api, $actor);
                     var renderApp = options.makeRenderApp(apiSession);
                     renderApp($actor);
                     return session;
@@ -175,6 +177,7 @@ function ibsen(options) {
             document.body.appendChild($actor);
             var $root = document.createElement("div");
             $actor.appendChild($root);
+            // TODO: We could aloways keep the dom when run with -i
             if (!KEEP_DOM) {
                 this.stoppables.push(function () { return __awaiter(_this, void 0, void 0, function () {
                     return __generator(this, function (_a) {

@@ -40,10 +40,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * (For Given steps, interact with the system using this.context).
  */
 var Actor = /** @class */ (function () {
-    function Actor(name, world) {
+    function Actor(name, session) {
         this.memory = new Map();
         this.name = name;
-        this.world = world;
+        this.session = session;
     }
     Actor.prototype.getName = function () {
         return this.name;
@@ -74,14 +74,13 @@ var Actor = /** @class */ (function () {
      * Use this in When steps to set up a context
      *
      * @param action a function that interacts with the system via a Session
-     * @param sessionFactory a factory for creating a session
      */
-    Actor.prototype.attemptsTo = function (action, sessionFactory) {
+    Actor.prototype.attemptsTo = function (action) {
         return __awaiter(this, void 0, void 0, function () {
             var nextSession;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, action(this.getSession(sessionFactory))];
+                    case 0: return [4 /*yield*/, action(this.session)];
                     case 1:
                         nextSession = _a.sent();
                         if (nextSession) {
@@ -100,16 +99,9 @@ var Actor = /** @class */ (function () {
     Actor.prototype.check = function (outcome) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, outcome(this.getSession(this.sessionFactory))];
+                return [2 /*return*/, outcome(this.session)];
             });
         });
-    };
-    Actor.prototype.getSession = function (sessionFactory) {
-        if (sessionFactory !== this.sessionFactory) {
-            this.session = this.world.makeSession(this.getName(), sessionFactory);
-            this.sessionFactory = sessionFactory;
-        }
-        return this.session;
     };
     return Actor;
 }());
