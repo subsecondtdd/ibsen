@@ -2,18 +2,17 @@ import assert from "assert"
 import { Given, Then, When } from "cucumber"
 import { Actor } from "../../src/ibsen"
 import { ActorHasSaid, LookAtMessages, Messages, Say } from "../support/interactions"
-import { Home } from "../support/SessionFactories"
 
 Given("{actor} has said {string}", async function (actor: Actor, message: string) {
   await this.context(ActorHasSaid(actor.getName(), message))
 })
 
 When("{actor} looks at the messages", async function (actor: Actor) {
-  await actor.attemptsTo(LookAtMessages(), Home)
+  await actor.attemptsTo(LookAtMessages())
 })
 
 When("{actor} says {string}", async function (actor: Actor, message: string) {
-  await actor.attemptsTo(Say(message), Home)
+  await actor.attemptsTo(Say(message))
 })
 
 Then("{actor} should see {string}", async function (actor: Actor, message: string) {

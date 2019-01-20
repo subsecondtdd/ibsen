@@ -1,4 +1,4 @@
-export default interface ChatSession {
+export default interface IChatSession {
   say(message: string): void
 
   getMessages(): Promise<string[]>

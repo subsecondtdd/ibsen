@@ -11,7 +11,7 @@ const KEEP_DOM = !!process.env.KEEP_DOM
 
 export { Actor, Context, Action, Outcome, SessionFactory }
 
-interface IbsenOptions<Api> {
+interface IbsenOptions<Api, InitialSession> {
   makeRenderApp: (session: any) => ($root: HTMLElement) => void
 
   makeDomainApi: () => Api
@@ -19,14 +19,15 @@ interface IbsenOptions<Api> {
   makeHttpApi: (baseurl: string) => Api
 
   makeHttpServer: (api: Api) => Promise<http.Server>
+
+  initialSessionFactory: () => SessionFactory<Api, InitialSession>
 }
 
-export interface IbsenWorld<Api> {
-  makeSession<Session>(actorName: string, sessionFactory: SessionFactory<Api, Session>): Session
+export interface IbsenWorld<Api, InitialSession> {
 }
 
-export default function ibsen<Api>(options: IbsenOptions<Api>) {
-  class World implements IbsenWorld<Api> {
+export default function ibsen<Api, InitialSession>(options: IbsenOptions<Api, InitialSession>) {
+  class World implements IbsenWorld<Api, InitialSession> {
     private readonly actors = new Map<string, Actor<Api>>()
     private readonly stoppables: Array<() => void> = []
     private domainApi: Api
@@ -39,7 +40,9 @@ export default function ibsen<Api>(options: IbsenOptions<Api>) {
     async getActor(actorName: string): Promise<Actor<Api>> {
       if (this.actors.has(actorName)) return this.actors.get(actorName)
 
-      const actor = new Actor(actorName, this)
+      const sessionFactory = options.initialSessionFactory()
+      const initialSession = this.makeSession(actorName, sessionFactory)
+      const actor = new Actor(actorName, initialSession)
       this.actors.set(actorName, actor)
       return actor
     }
@@ -90,7 +93,7 @@ export default function ibsen<Api>(options: IbsenOptions<Api>) {
 
         case "DomSession":
           const $actor = this.makeActorNode(actorName)
-          const session = sessionFactory.DomSession(actorName, $actor, api)
+          const session = sessionFactory.DomSession(actorName, api, $actor)
           const renderApp = options.makeRenderApp(apiSession)
           renderApp($actor)
           return session
@@ -111,6 +114,7 @@ export default function ibsen<Api>(options: IbsenOptions<Api>) {
       const $root = document.createElement("div")
       $actor.appendChild($root)
 
+      // TODO: We could aloways keep the dom when run with -i
       if (!KEEP_DOM) {
         this.stoppables.push(async () => {
           $actor.remove()

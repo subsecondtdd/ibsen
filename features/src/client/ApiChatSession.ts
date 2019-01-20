@@ -1,8 +1,8 @@
-import ChatSession from "./ChatSession"
+import IChatSession from "./IChatSession"
 import IChatApi from "../domain/IChatApi"
 
-export default class ApiChatSession implements ChatSession {
-  constructor(private actorName: string, private api: IChatApi) {
+export default class ApiChatSession implements IChatSession {
+  constructor(private readonly actorName: string, private readonly api: IChatApi) {
   }
 
   async say(message: string): Promise<void> {

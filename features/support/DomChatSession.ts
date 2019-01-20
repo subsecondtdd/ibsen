@@ -1,10 +1,10 @@
-import ChatSession from "../src/client/ChatSession"
+import IChatSession from "../src/client/IChatSession"
 import { fireEvent, waitForElement } from "dom-testing-library"
 // @ts-ignore
 import reactTriggerChange from "react-trigger-change"
 import getMicrodata from "../../src/getMicrodata"
 
-export default class DomChatSession implements ChatSession {
+export default class DomChatSession implements IChatSession {
   constructor(private actorName: string, private $root: HTMLElement) {
   }
 

@@ -1,8 +1,8 @@
 import React, { ReactNode, useState } from "react"
-import ChatSession from "./ChatSession"
+import IChatSession from "./IChatSession"
 
 interface IAppProps {
-  chatSession: ChatSession
+  chatSession: IChatSession
 }
 
 interface IState {

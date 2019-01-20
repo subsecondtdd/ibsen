@@ -1,4 +1,4 @@
-import ChatSession from "../src/client/ChatSession"
+import IChatSession from "../src/client/IChatSession"
 import { Action, Context, Outcome } from "../../src/ibsen"
 import ChatApp from "../src/domain/ChatApp"
 
@@ -10,16 +10,16 @@ export function ActorHasSaid(actorName: string, message: string): Context<ChatAp
 
 //// Actions ////
 
-export function LookAtMessages(): Action<ChatSession> {
-  return async (session: ChatSession) => session.lookAtMessages()
+export function LookAtMessages(): Action<IChatSession> {
+  return async (session: IChatSession) => session.lookAtMessages()
 }
 
-export function Say(message: string): Action<ChatSession> {
-  return async (session: ChatSession) => session.say(message)
+export function Say(message: string): Action<IChatSession> {
+  return async (session: IChatSession) => session.say(message)
 }
 
 //// Outcomes ////
 
-export function Messages(): Outcome<ChatSession, string[]> {
-  return async (session: ChatSession) => session.getMessages()
+export function Messages(): Outcome<IChatSession, string[]> {
+  return async (session: IChatSession) => session.getMessages()
 }
