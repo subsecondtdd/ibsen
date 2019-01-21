@@ -12,8 +12,6 @@ const KEEP_DOM = !!process.env.KEEP_DOM
 export { Actor, Context, Action, Outcome, SessionFactory }
 
 interface IbsenOptions<Api, InitialSession> {
-  makeRenderApp: (session: any) => ($root: HTMLElement) => void
-
   makeDomainApi: () => Api
 
   makeHttpApi: (baseurl: string) => Api
@@ -21,6 +19,8 @@ interface IbsenOptions<Api, InitialSession> {
   makeHttpServer: (api: Api) => Promise<http.Server>
 
   initialSessionFactory: () => SessionFactory<Api, InitialSession>
+
+  initialRender: ($root: HTMLElement, session: InitialSession) => void
 }
 
 export interface IbsenWorld<Api, InitialSession> {
@@ -41,7 +41,7 @@ export default function ibsen<Api, InitialSession>(options: IbsenOptions<Api, In
       if (this.actors.has(actorName)) return this.actors.get(actorName)
 
       const sessionFactory = options.initialSessionFactory()
-      const initialSession = this.makeSession(actorName, sessionFactory)
+      const initialSession = this.makeInitialSession(actorName, sessionFactory)
       const actor = new Actor(actorName, initialSession)
       this.actors.set(actorName, actor)
       return actor
@@ -83,7 +83,7 @@ export default function ibsen<Api, InitialSession>(options: IbsenOptions<Api, In
       }
     }
 
-    public makeSession<Session>(actorName: string, sessionFactory: SessionFactory<Api, Session>): Session {
+    private makeInitialSession(actorName: string, sessionFactory: SessionFactory<Api, InitialSession>): InitialSession {
       const api = this.makeSessionApi()
       const apiSession = sessionFactory.ApiSession(actorName, api)
 
@@ -93,10 +93,8 @@ export default function ibsen<Api, InitialSession>(options: IbsenOptions<Api, In
 
         case "DomSession":
           const $actor = this.makeActorNode(actorName)
-          const session = sessionFactory.DomSession(actorName, api, $actor)
-          const renderApp = options.makeRenderApp(apiSession)
-          renderApp($actor)
-          return session
+          options.initialRender($actor, apiSession)
+          return sessionFactory.DomSession(actorName, api, $actor)
 
         default:
           throw new Error(`Unsupported Session: ${SESSION}`)

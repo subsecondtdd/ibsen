@@ -1,6 +1,6 @@
 export type Context<Api> = (api: Api) => Promise<void>
 
-export type Action<Session, NextSession = void> = (session: Session) => Promise<NextSession>
+export type Action<Session, NextSession> = (session: Session) => Promise<NextSession>
 
 export type Outcome<Session, Result> = (session: Session) => Promise<Result>
 

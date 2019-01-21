@@ -10,11 +10,11 @@ export function ActorHasSaid(actorName: string, message: string): Context<ChatAp
 
 //// Actions ////
 
-export function LookAtMessages(): Action<IChatSession> {
+export function LookAtMessages(): Action<IChatSession, IChatSession> {
   return async (session: IChatSession) => session.lookAtMessages()
 }
 
-export function Say(message: string): Action<IChatSession> {
+export function Say(message: string): Action<IChatSession, IChatSession> {
   return async (session: IChatSession) => session.say(message)
 }
 

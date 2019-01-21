@@ -1,7 +1,7 @@
 export default interface IChatSession {
-  say(message: string): void
+  say(message: string): Promise<IChatSession>
 
   getMessages(): Promise<string[]>
 
-  lookAtMessages(): void
+  lookAtMessages(): Promise<IChatSession>
 }

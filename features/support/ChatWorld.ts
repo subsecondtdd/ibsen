@@ -1,4 +1,4 @@
-import http from "http"
+import * as http from "http"
 import ibsen, { SessionFactory } from "../../src/ibsen"
 import { After, Before, setWorldConstructor } from "cucumber"
 import ChatApp from "../src/domain/ChatApp"
@@ -18,10 +18,6 @@ ibsen<IChatApi, IChatSession>({
     return new ChatClient(baseurl)
   },
 
-  makeRenderApp(session: IChatSession): ($root: HTMLElement) => void {
-    return ($root: HTMLElement) => renderApp($root, session)
-  },
-
   async makeHttpServer(api: IChatApi): Promise<http.Server> {
     const expressApp = makeChatExpressApp(api)
     return http.createServer(expressApp)
@@ -29,6 +25,10 @@ ibsen<IChatApi, IChatSession>({
 
   initialSessionFactory(): SessionFactory<IChatApi, IChatSession> {
     return Home
+  },
+
+  initialRender($root: HTMLElement, session: IChatSession) {
+    renderApp($root, session)
   },
 })
 

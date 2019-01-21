@@ -70,7 +70,7 @@ function ibsen(options) {
                     if (this.actors.has(actorName))
                         return [2 /*return*/, this.actors.get(actorName)];
                     sessionFactory = options.initialSessionFactory();
-                    initialSession = this.makeSession(actorName, sessionFactory);
+                    initialSession = this.makeInitialSession(actorName, sessionFactory);
                     actor = new Actor_1.default(actorName, initialSession);
                     this.actors.set(actorName, actor);
                     return [2 /*return*/, actor];
@@ -151,7 +151,7 @@ function ibsen(options) {
                     throw new Error("Unsupported Api: " + API);
             }
         };
-        World.prototype.makeSession = function (actorName, sessionFactory) {
+        World.prototype.makeInitialSession = function (actorName, sessionFactory) {
             var api = this.makeSessionApi();
             var apiSession = sessionFactory.ApiSession(actorName, api);
             switch (SESSION) {
@@ -159,10 +159,8 @@ function ibsen(options) {
                     return apiSession;
                 case "DomSession":
                     var $actor = this.makeActorNode(actorName);
-                    var session = sessionFactory.DomSession(actorName, api, $actor);
-                    var renderApp = options.makeRenderApp(apiSession);
-                    renderApp($actor);
-                    return session;
+                    options.initialRender($actor, apiSession);
+                    return sessionFactory.DomSession(actorName, api, $actor);
                 default:
                     throw new Error("Unsupported Session: " + SESSION);
             }
